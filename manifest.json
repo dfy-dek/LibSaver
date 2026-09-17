@@ -1,0 +1,61 @@
+{
+  "manifest_version": 3,
+  "name": "RanobeDL",
+  "version": "1.2",
+  "description": "Ranobe downloader for RanobeLib",
+  "permissions": [
+    "tabs",
+    "storage",
+    "scripting",
+    "activeTab",
+    "webRequest",
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess",
+    "downloads"
+  ],
+
+  "declarative_net_request": {
+    "rule_resources": [{
+      "id": "manga_headers",
+      "enabled": true,
+      "path": "rules.json"
+    }]
+  },
+  "host_permissions": [
+    "<all_urls>",
+    "https://ranobelib.me/*",
+    "https://mangalib.me/*",
+    "https://hentailib.me/*",
+    "https://v2.shlib.life/*",
+    "https://animelib.org/*",
+    "https://anilib.me/*",
+    "https://v2.animelib.org/*",
+    "https://v5.animelib.org/*",
+    "https://api.cdnlibs.org/*",
+    "https://hapi.hentaicdn.org/*",
+    "https://cover.cdnlibs.org/*",
+    "https://img2.mixlib.me/*",
+    "https://*.imglib.info/*",
+    "https://*.cdnlibs.org/*",
+    "https://*.hentaicdn.org/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://ranobelib.me/*", "https://mangalib.me/*", "https://hentailib.me/*", "https://v2.shlib.life/*", "https://animelib.org/*", "https://anilib.me/*", "https://v2.animelib.org/*", "https://v5.animelib.org/*"],
+      "js": ["content/SiteMenuRestorer.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["settings.html", "metadata.html", "chapters.html", "covers.html", "prepare.html", "local_data", "svg/*.svg", "fonts/**/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>RanobeDL - Настройки</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="core/theme-init.js"></script>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/settings.css">
+</head>
+<body>
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <button class="btn-save" id="btn-save">
+        <i class="fa-solid fa-save"></i>
+        Сохранить
+      </button>
+      <button class="btn-secondary" id="btn-reset">
+        <i class="fa-solid fa-rotate-left"></i>
+        Сбросить всё
+      </button>
+      <div class="theme-selector">
+        <div class="theme-select" id="theme-select">Тёмная</div>
+        <div class="theme-dropdown" id="theme-dropdown" style="display: none;">
+          <div class="theme-dropdown-option selected" data-value="dark">Тёмная</div>
+          <div class="theme-dropdown-option" data-value="light">Светлая</div>
+          <div class="theme-dropdown-option" data-value="system">Системная</div>
+        </div>
+      </div>
+      <div class="accent-selector">
+        <div class="accent-select" id="accent-select">Авто</div>
+        <div class="accent-dropdown" id="accent-dropdown" style="display: none;">
+          <div class="accent-dropdown-option selected" data-value="auto">Авто</div>
+          <div class="accent-dropdown-option" data-value="manga">MangaLIB</div>
+          <div class="accent-dropdown-option" data-value="hentai">HentaiLIB</div>
+          <div class="accent-dropdown-option" data-value="slash">SlashLIB</div>
+          <div class="accent-dropdown-option" data-value="ranobe">RanobeLIB</div>
+          <div class="accent-dropdown-option" data-value="anime">AnimeLIB</div>
+          <div class="accent-dropdown-option" data-value="social">SocialLIB</div>
+          <div class="accent-dropdown-option" data-value="pink">Розовый</div>
+          <div class="accent-dropdown-option" data-value="beige">Бежевый</div>
+          <div class="accent-dropdown-option" data-value="yellow">Жёлтый</div>
+          <div class="accent-dropdown-option" data-value="green">Зелёный</div>
+          <div class="accent-dropdown-option" data-value="mint">Мятный</div>
+        </div>
+      </div>
+    </div>
+    <div class="toolbar-right">
+      <span class="reload-warning" id="reload-warning" style="display: none;">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        Изменения будут видны после перезагрузки сайта
+      </span>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div class="panel">
+      <div class="section-title">
+        <span>Общие</span>
+        <button class="btn-help-group" data-group="general" data-tooltip="Обычное меню LIB сайтов: когда включено,<br>расширение перестанет добавлять HentaiLIB,<br>SlashLIB и AnimeLIB в меню сайтов."><i class="fa-solid fa-question"></i></button>
+        <button class="btn-reset-group" data-group="general"><i class="fa-solid fa-rotate-left"></i></button>
+      </div>
+
+      <div class="field">
+        <label class="checkbox-group">
+          <input type="checkbox" id="disable-site-menu">
+          <span class="control__indicator" data-type="checkbox">
+            <svg class="svg-inline--fa fa-square-check fa-fw" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="square-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="checked"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg>
+            <svg class="svg-inline--fa fa-square fa-fw" aria-hidden="true" focusable="false" data-prefix="far" data-icon="square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="default"><path fill="currentColor" d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"></path></svg>
+          </span>
+          <span>Обычное меню LIB сайтов</span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label class="checkbox-group">
+          <input type="checkbox" id="debug-logging">
+          <span class="control__indicator" data-type="checkbox">
+            <svg class="svg-inline--fa fa-square-check fa-fw" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="square-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="checked"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg>
+            <svg class="svg-inline--fa fa-square fa-fw" aria-hidden="true" focusable="false" data-prefix="far" data-icon="square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="default"><path fill="currentColor" d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"></path></svg>
+          </span>
+          <span>Подробное логирование</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="section-title">
+        <span>Обработка изображений</span>
+        <button class="btn-help-group" data-group="images" data-tooltip="Заданный размер качества (например, 1080px) станет<br>основой для сжатия:<br>- Меньшая сторона: подгоняет меньшую сторону под лимит.<br>Пример: 4970 × 5389 → 996 × 1080<br>- Большая сторона: ограничивает максимальную сторону.<br>Пример: 4970 × 5389 → 1080 × 1171<br>Адаптивное: сжимает по меньшей стороне,<br> но только, если картинка вытянутая (например, 3:1)."><i class="fa-solid fa-question"></i></button>
+        <button class="btn-reset-group" data-group="images"><i class="fa-solid fa-rotate-left"></i></button>
+      </div>
+
+      <div class="field">
+        <label for="cover-quality">Качество обложек</label>
+        <select id="cover-quality">
+          <option value="NONE">Без обложек</option>
+          <option value="ORIGINAL" selected>Без сжатия</option>
+          <option value="2K">1600px</option>
+          <option value="QHD">1440px</option>
+          <option value="FHD">1080px</option>
+          <option value="HD">720px</option>
+          <option value="qHD">540px</option>
+          <option value="SD">480px</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="image-quality">Качество картинок</label>
+        <select id="image-quality">
+          <option value="NONE">Без картинок</option>
+          <option value="ORIGINAL" selected>Без сжатия</option>
+          <option value="2K">1600px</option>
+          <option value="QHD">1440px</option>
+          <option value="FHD">1080px</option>
+          <option value="HD">720px</option>
+          <option value="qHD">540px</option>
+          <option value="SD">480px</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="resize-method">Метод сжатия</label>
+        <select id="resize-method">
+          <option value="MIN_SIDE" selected>По меньшей стороне (рекомендуется)</option>
+          <option value="MAX_SIDE">По большей стороне</option>
+          <option value="ADAPTIVE">Адаптивный</option>
+        </select>
+      </div>
+
+      <div class="field" id="adaptive-ratio-field" style="display: none;">
+        <label for="adaptive-ratio">Порог соотношения сторон</label>
+        <div class="range-slider">
+          <input type="range" id="adaptive-ratio" min="2" max="5" step="0.5" value="3">
+          <div class="range-value" id="adaptive-ratio-value">3:1</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="image-format">Формат изображений</label>
+        <select id="image-format">
+          <option value="original" selected>Исходный</option>
+          <option value="jpeg">JPEG</option>
+          <option value="png">PNG</option>
+          <option value="webp">WebP</option>
+        </select>
+      </div>
+
+      <div class="field" id="jpeg-quality-field">
+        <label for="jpeg-quality" id="jpeg-quality-label">Качество JPEG</label>
+        <div class="range-slider">
+          <input type="range" id="jpeg-quality" min="0.1" max="1.0" step="0.1" value="1.0">
+          <div class="range-value" id="jpeg-quality-value">1.0</div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="panel">
+      <div class="section-title">
+        <span>Оглавление</span>
+        <button class="btn-help-group" data-group="toc" data-tooltip="Настройки форматирования и отображения оглавления. Применяется ко всем форматам (EPUB, PDF, FB2, HTML)."><i class="fa-solid fa-question"></i></button>
+        <button class="btn-reset-group" data-group="toc"><i class="fa-solid fa-rotate-left"></i></button>
+      </div>
+
+      <div class="field">
+        <label for="toc-format">Формат заголовков</label>
+        <select id="toc-format">
+          <option value="format1">Том X Глава Y Название</option>
+          <option value="format2">Том X Глава Y - Название</option>
+          <option value="format3">Том X - Глава Y - Название</option>
+          <option value="default" selected>Том X. Глава Y. Название</option>
+          <option value="custom">Пользовательский формат</option>
+        </select>
+      </div>
+
+      <div class="field" id="custom-toc-format-field" style="display: none;">
+        <label for="custom-toc-format">Пользовательский формат</label>
+        <input type="text" id="custom-toc-format" placeholder="{vol} - том, {num} - глава, {name} - название">
+      </div>
+
+      <div class="field">
+        <label class="checkbox-group">
+          <input type="checkbox" id="hide-volume-number">
+          <span class="control__indicator" data-type="checkbox">
+            <svg class="svg-inline--fa fa-square-check fa-fw" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="square-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="checked"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg>
+            <svg class="svg-inline--fa fa-square fa-fw" aria-hidden="true" focusable="false" data-prefix="far" data-icon="square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="default"><path fill="currentColor" d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"></path></svg>
+          </span>
+          <span>Скрыть номера томов</span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label class="checkbox-group">
+          <input type="checkbox" id="hide-chapter-name">
+          <span class="control__indicator" data-type="checkbox">
+            <svg class="svg-inline--fa fa-square-check fa-fw" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="square-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="checked"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg>
+            <svg class="svg-inline--fa fa-square fa-fw" aria-hidden="true" focusable="false" data-prefix="far" data-icon="square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="default"><path fill="currentColor" d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"></path></svg>
+          </span>
+          <span>Скрыть названия глав</span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label class="checkbox-group">
+          <input type="checkbox" id="disable-toc">
+          <span class="control__indicator" data-type="checkbox">
+            <svg class="svg-inline--fa fa-square-check fa-fw" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="square-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="checked"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg>
+            <svg class="svg-inline--fa fa-square fa-fw" aria-hidden="true" focusable="false" data-prefix="far" data-icon="square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="default"><path fill="currentColor" d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"></path></svg>
+          </span>
+          <span>Отключить оглавление</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="section-title">
+        <span>EPUB</span>
+        <button class="btn-help-group" data-group="epub" data-tooltip="Настройки EPUB формата"><i class="fa-solid fa-question"></i></button>
+        <button class="btn-reset-group" data-group="epub"><i class="fa-solid fa-rotate-left"></i></button>
+      </div>
+
+      <div class="field">
+        <label class="checkbox-group">
+          <input type="checkbox" id="epub-toc-page" checked>
+          <span class="control__indicator" data-type="checkbox">
+            <svg class="svg-inline--fa fa-square-check fa-fw" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="square-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="checked"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg>
+            <svg class="svg-inline--fa fa-square fa-fw" aria-hidden="true" focusable="false" data-prefix="far" data-icon="square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="default"><path fill="currentColor" d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"></path></svg>
+          </span>
+          <span>Страница оглавления</span>
+        </label>
+      </div>
+
+    </div>
+
+    <div class="panel">
+      <div class="section-title">
+        <span>PDF</span>
+        <button class="btn-help-group" data-group="pdf" data-tooltip="Настройки шрифта и размера страницы для PDF"><i class="fa-solid fa-question"></i></button>
+        <button class="btn-reset-group" data-group="pdf"><i class="fa-solid fa-rotate-left"></i></button>
+      </div>
+
+      <div class="field">
+        <label for="pdf-font">Шрифт</label>
+        <select id="pdf-font" style="height: 30px; font-size: 10px;">
+          <option value="dejavu-sans" selected style="font-family: 'DejaVu Sans';">DejaVu Sans</option>
+          <option value="inter" style="font-family: 'Inter';">Inter</option>
+          <option value="merriweather" style="font-family: 'Merriweather';">Merriweather</option>
+          <option value="montserrat" style="font-family: 'Montserrat';">Montserrat</option>
+          <option value="open-sans" style="font-family: 'Open Sans';">Open Sans</option>
+          <option value="roboto" style="font-family: 'Roboto';">Roboto</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="pdf-font-size">Размер шрифта</label>
+        <select id="pdf-font-size">
+          <option value="6">6 pt</option>
+          <option value="8">8 pt</option>
+          <option value="10">10 pt</option>
+          <option value="12" selected>12 pt</option>
+          <option value="14">14 pt</option>
+          <option value="16">16 pt</option>
+          <option value="18">18 pt</option>
+          <option value="20">20 pt</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="pdf-page-size">Размер страницы</label>
+        <select id="pdf-page-size">
+          <option value="A6">A6 (105 × 148 мм)</option>
+          <option value="A5" selected>A5 (148 × 210 мм)</option>
+          <option value="A4">A4 (210 × 297 мм)</option>
+          <option value="Letter">Letter (216 × 279 мм)</option>
+          <option value="B5">B5 (176 × 250 мм)</option>
+          <option value="B4">B4 (250 × 353 мм)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="pdf-line-spacing">Межстрочный интервал</label>
+        <select id="pdf-line-spacing">
+          <option value="0">0 px (плотно)</option>
+          <option value="1">1 px</option>
+          <option value="2" selected>2 px (нормально)</option>
+          <option value="3">3 px</option>
+          <option value="4">4 px (воздушно)</option>
+          <option value="5">5 px</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="pdf-paragraph-spacing">Отступ между абзацами</label>
+        <select id="pdf-paragraph-spacing">
+          <option value="0.5">0.5 × размер шрифта (компактно)</option>
+          <option value="1" selected>1.0 × размер шрифта (нормально)</option>
+          <option value="1.5">1.5 × размер шрифта (воздушно)</option>
+          <option value="2">2.0 × размер шрифта (много места)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="pdf-image-format">Формат изображений</label>
+        <select id="pdf-image-format">
+          <option value="original-jpeg">Исходный, иначе JPEG</option>
+          <option value="original-png" selected>Исходный, иначе PNG</option>
+        </select>
+      </div>
+
+      <div class="field" id="pdf-jpeg-quality-field">
+        <label for="pdf-jpeg-quality">Качество JPEG</label>
+        <div class="range-slider">
+          <input type="range" id="pdf-jpeg-quality" min="0.1" max="1.0" step="0.1" value="1.0">
+          <div class="range-value" id="pdf-jpeg-quality-value">1.0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="section-title">
+        <span>TXT</span>
+        <button class="btn-help-group" data-group="txt" data-tooltip="Настройки маркеров картинок в TXT формате"><i class="fa-solid fa-question"></i></button>
+        <button class="btn-reset-group" data-group="txt"><i class="fa-solid fa-rotate-left"></i></button>
+      </div>
+
+      <div class="field">
+        <label for="txt-image-marker">Маркер картинок</label>
+        <select id="txt-image-marker">
+          <option value="numbered" selected>Картинка N</option>
+          <option value="simple">Картинка</option>
+          <option value="none">Без маркера</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="section-title">
+        <span>Метаданные</span>
+        <button class="btn-help-group" data-group="metadata" data-tooltip="Настройки полей метаданных произведения"><i class="fa-solid fa-question"></i></button>
+        <button class="btn-reset-group" data-group="metadata"><i class="fa-solid fa-rotate-left"></i></button>
+      </div>
+
+      <div class="field">
+        <label class="checkbox-group">
+          <input type="checkbox" id="metadata-title-ru" checked data-field="title-ru">
+          <span class="control__indicator" data-type="checkbox">
+            <svg class="svg-inline--fa fa-square-check fa-fw" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="square-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="checked"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg>
+            <svg class="svg-inline--fa fa-square fa-fw" aria-hidden="true" focusable="false" data-prefix="far" data-icon="square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="default"><path fill="currentColor" d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"></path></svg>
+          </span>
+          <span>Название (RU)</span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label class="checkbox-group">
+          <input type="checkbox" id="metadata-title-en" checked data-field="title-en">
+          <span class="control__indicator" data-type="checkbox">
+            <svg class="svg-inline--fa fa-square-check fa-fw" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="square-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="checked"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg>
+            <svg class="svg-inline--fa fa-square fa-fw" aria-hidden="true" focusable="false" data-prefix="far" data-icon="square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="default"><path fill="currentColor" d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"></path></svg>
+          </span>
+          <span>Название (EN)</span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label class="checkbox-group">
+          <input type="checkbox" id="metadata-title-original" checked data-field="title-original">
+          <span class="control__indicator" data-type="checkbox">
+            <svg class="svg-inline--fa fa-square-check fa-fw" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="square-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="checked"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg>
+            <svg class="svg-inline--fa fa-square fa-fw" aria-hidden="true" focusable="false" data-prefix="far" data-icon="square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="default"><path fill="currentColor" d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"></path></svg>
+          </span>
+          <span>Название (SRC)</span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label class="checkbox-group">
+          <input type="checkbox" id="metadata-title-alt" checked data-field="title-alt">
+          <span class="control__indicator" data-type="checkbox">
+            <svg class="svg-inline--fa fa-square-check fa-fw" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="square-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="checked"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg>
+            <svg class="svg-inline--fa fa-square fa-fw" aria-hidden="true" focusable="false" data-prefix="far" data-icon="square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="default"><path fill="currentColor" d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"></path></svg>
+          </span>
+          <span>Название (ALT)</span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label class="checkbox-group">
+          <input type="checkbox" id="metadata-author" checked data-field="author">
+          <span class="control__indicator" data-type="checkbox">
+            <svg class="svg-inline--fa fa-square-check fa-fw" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="square-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="checked"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg>
+            <svg class="svg-inline--fa fa-square fa-fw" aria-hidden="true" focusable="false" data-prefix="far" data-icon="square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="default"><path fill="currentColor" d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"></path></svg>
+          </span>
+          <span>Автор</span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label class="checkbox-group">
+          <input type="checkbox" id="metadata-artist" checked data-field="artist">
+          <span class="control__indicator" data-type="checkbox">
+            <svg class="svg-inline--fa fa-square-check fa-fw" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="square-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="checked"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg>
+            <svg class="svg-inline--fa fa-square fa-fw" aria-hidden="true" focusable="false" data-prefix="far" data-icon="square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="default"><path fill="currentColor" d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"></path></svg>
+          </span>
+          <span>Художник</span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label class="checkbox-group">
+          <input type="checkbox" id="metadata-year" checked data-field="year">
+          <span class="control__indicator" data-type="checkbox">
+            <svg class="svg-inline--fa fa-square-check fa-fw" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="square-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="checked"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg>
+            <svg class="svg-inline--fa fa-square fa-fw" aria-hidden="true" focusable="false" data-prefix="far" data-icon="square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="default"><path fill="currentColor" d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"></path></svg>
+          </span>
+          <span>Год</span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label class="checkbox-group">
+          <input type="checkbox" id="metadata-status" checked data-field="status">
+          <span class="control__indicator" data-type="checkbox">
+            <svg class="svg-inline--fa fa-square-check fa-fw" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="square-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="checked"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg>
+            <svg class="svg-inline--fa fa-square fa-fw" aria-hidden="true" focusable="false" data-prefix="far" data-icon="square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="default"><path fill="currentColor" d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"></path></svg>
+          </span>
+          <span>Статус</span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label class="checkbox-group">
+          <input type="checkbox" id="metadata-country" checked data-field="country">
+          <span class="control__indicator" data-type="checkbox">
+            <svg class="svg-inline--fa fa-square-check fa-fw" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="square-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="checked"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg>
+            <svg class="svg-inline--fa fa-square fa-fw" aria-hidden="true" focusable="false" data-prefix="far" data-icon="square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="default"><path fill="currentColor" d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"></path></svg>
+          </span>
+          <span>Тип</span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label class="checkbox-group">
+          <input type="checkbox" id="metadata-publisher" checked data-field="publisher">
+          <span class="control__indicator" data-type="checkbox">
+            <svg class="svg-inline--fa fa-square-check fa-fw" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="square-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="checked"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg>
+            <svg class="svg-inline--fa fa-square fa-fw" aria-hidden="true" focusable="false" data-prefix="far" data-icon="square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="default"><path fill="currentColor" d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"></path></svg>
+          </span>
+          <span>Издатель</span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label class="checkbox-group">
+          <input type="checkbox" id="metadata-age-restriction" checked data-field="age-restriction">
+          <span class="control__indicator" data-type="checkbox">
+            <svg class="svg-inline--fa fa-square-check fa-fw" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="square-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="checked"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg>
+            <svg class="svg-inline--fa fa-square fa-fw" aria-hidden="true" focusable="false" data-prefix="far" data-icon="square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="default"><path fill="currentColor" d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"></path></svg>
+          </span>
+          <span>Возрастное ограничение</span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label class="checkbox-group">
+          <input type="checkbox" id="metadata-description" checked data-field="description">
+          <span class="control__indicator" data-type="checkbox">
+            <svg class="svg-inline--fa fa-square-check fa-fw" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="square-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="checked"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg>
+            <svg class="svg-inline--fa fa-square fa-fw" aria-hidden="true" focusable="false" data-prefix="far" data-icon="square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="default"><path fill="currentColor" d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"></path></svg>
+          </span>
+          <span>Описание</span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label class="checkbox-group">
+          <input type="checkbox" id="metadata-genres" checked data-field="genres">
+          <span class="control__indicator" data-type="checkbox">
+            <svg class="svg-inline--fa fa-square-check fa-fw" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="square-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="checked"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg>
+            <svg class="svg-inline--fa fa-square fa-fw" aria-hidden="true" focusable="false" data-prefix="far" data-icon="square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="default"><path fill="currentColor" d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"></path></svg>
+          </span>
+          <span>Жанры</span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label class="checkbox-group">
+          <input type="checkbox" id="metadata-tags" checked data-field="tags">
+          <span class="control__indicator" data-type="checkbox">
+            <svg class="svg-inline--fa fa-square-check fa-fw" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="square-check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="checked"><path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg>
+            <svg class="svg-inline--fa fa-square fa-fw" aria-hidden="true" focusable="false" data-prefix="far" data-icon="square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-state="default"><path fill="currentColor" d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"></path></svg>
+          </span>
+          <span>Метки</span>
+        </label>
+      </div>
+    </div>
+  </div>
+  
+  <script src="libs/popper.min.js"></script>
+  <script src="libs/tippy-bundle.umd.min.js"></script>
+  <script src="core/formatUtils.js"></script>
+  <script src="core/theme.js"></script>
+  <script src="core/settings.js"></script>
+</body>
+</html>
