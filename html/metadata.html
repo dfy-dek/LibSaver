@@ -7,10 +7,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="core/theme-init.js"></script>
-  <script src="libs/Sortable.min.js"></script>
-  <link rel="stylesheet" href="css/common.css">
-  <link rel="stylesheet" href="css/editor.css">
+  <script src="../core/theme-init.js"></script>
+  <script src="../libs/Sortable.min.js"></script>
+  <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/editor.css">
   <style>
     .auto-resize {
       min-height: 28px !important;
@@ -285,10 +285,16 @@
       <textarea id="tags" class="auto-resize" rows="1"></textarea>
     </div>
   </div>
-  
-  <script src="libs/Sortable.min.js"></script>
-  <script src="libs/autosize.min.js"></script>
-  <script src="core/theme.js"></script>
-  <script src="editors/metadata.js"></script>
+
+  <div class="scroll-buttons" id="scroll-buttons" style="display: none;">
+    <button class="scroll-btn" id="scroll-btn" title="Наверх">
+      <i class="fa-solid fa-chevron-up"></i>
+    </button>
+  </div>
+
+  <script src="../libs/autosize.min.js"></script>
+  <script src="../core/theme.js"></script>
+  <script src="../editors/metadata.js"></script>
+  <script src="../utils/scroll.js"></script>
 </body>
 </html>

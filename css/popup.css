@@ -54,12 +54,16 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 20px;
   cursor: pointer;
   flex-shrink: 0;
   transition: border-color 0.15s ease-in-out, background-color 0.15s ease-in-out;
   -webkit-user-select: none;
   user-select: none;
+}
+
+.btn-edit:disabled {
+  cursor: default;
 }
 
 .btn-edit:hover {
@@ -237,9 +241,6 @@ body {
   top: 10px;
   right: 10px;
   z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
   pointer-events: none;
 }
 
@@ -255,9 +256,11 @@ body {
   gap: var(--spacing-sm);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   pointer-events: auto;
+  position: absolute;
+  right: 0;
   transform: translateX(100%);
   opacity: 0;
-  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out;
 }
 
 .toast.show {
@@ -277,6 +280,14 @@ body {
 
 .toast.success i {
   color: var(--success-color);
+}
+
+.toast.error {
+  border-color: #f44336;
+}
+
+.toast.error i {
+  color: #f44336;
 }
 
 .toast.cancel {

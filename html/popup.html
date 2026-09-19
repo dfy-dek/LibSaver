@@ -6,9 +6,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="core/theme-init.js"></script>
-  <link rel="stylesheet" href="css/common.css">
-  <link rel="stylesheet" href="css/popup.css">
+  <script src="../core/theme-init.js"></script>
+  <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/popup.css">
 </head>
 <body>
   <div id="loader" class="loader">
@@ -23,19 +23,19 @@
       <div id="error-text" class="message-text">Выберите нужное произведение и перейдите на его главную страницу.</div>
       <div class="lib-buttons">
         <button id="btn-mangalib" class="btn-redirect btn-mangalib hidden" title="MangaLIB">
-          <div class="lib-logo" data-svg="svg/MangaLIB.svg"></div>
+          <div class="lib-logo" data-svg="assets/svg/MangaLIB.svg"></div>
         </button>
         <button id="btn-hentailib" class="btn-redirect btn-hentailib hidden" title="HentaiLIB">
-          <div class="lib-logo" data-svg="svg/HentaiLIB.svg"></div>
+          <div class="lib-logo" data-svg="assets/svg/HentaiLIB.svg"></div>
         </button>
         <button id="btn-shlib" class="btn-redirect btn-shlib hidden" title="SlashLIB">
-          <div class="lib-logo" data-svg="svg/SlashLIB.svg"></div>
+          <div class="lib-logo" data-svg="assets/svg/SlashLIB.svg"></div>
         </button>
         <button id="btn-ranobelib" class="btn-redirect btn-ranobelib hidden" title="RanobeLIB">
-          <div class="lib-logo" data-svg="svg/RanobeLIB.svg"></div>
+          <div class="lib-logo" data-svg="assets/svg/RanobeLIB.svg"></div>
         </button>
         <button id="btn-animelib" class="btn-redirect btn-animelib hidden" title="AnimeLIB">
-          <div class="lib-logo" data-svg="svg/AnimeLIB.svg"></div>
+          <div class="lib-logo" data-svg="assets/svg/AnimeLIB.svg"></div>
         </button>
       </div>
       <button id="btn-reload-page" class="btn-redirect hidden">Перезагрузить страницу</button>
@@ -77,15 +77,15 @@
     </button>
   </div>
 
-  <script src="libs/jszip.min.js"></script>
-  <script src="libs/FileSaver.min.js"></script>
-  <script src="libs/pica.min.js"></script>
-  <script src="core/formatUtils.js"></script>
-  <script src="core/api.js"></script>
-  <script src="core/protection.js"></script>
-  <script src="core/statistics.js"></script>
-  <script src="core/theme.js"></script>
-  <script src="toast.js"></script>
-  <script src="core/popup.js"></script>
+  <script src="../libs/jszip.min.js"></script>
+  <script src="../libs/FileSaver.min.js"></script>
+  <script src="../libs/pica.min.js"></script>
+  <script src="../utils/header.js"></script>
+  <script src="../core/api.js"></script>
+  <script src="../utils/protection.js"></script>
+  <script src="../core/statistics.js"></script>
+  <script src="../core/theme.js"></script>
+  <script src="../utils/toast.js"></script>
+  <script src="../core/popup.js"></script>
 </body>
 </html>

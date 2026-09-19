@@ -7,29 +7,30 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="core/theme-init.js"></script>
-  <script src="core/theme.js"></script>
-  <link rel="stylesheet" href="css/common.css">
-  <link rel="stylesheet" href="css/prepare.css">
-  <link rel="stylesheet" href="css/scale-subtle.css">
-  <script src="libs/popper.min.js"></script>
-  <script src="libs/tippy-bundle.umd.min.js"></script>
-  <script src="libs/jszip.min.js"></script>
-  <script src="libs/pica.min.js"></script>
-  <script src="libs/pdf-lib.min.js"></script>
-  <script src="libs/fontkit.umd.min.js"></script>
-  <script src="libs/FileSaver.min.js"></script>
-  <script src="core/api.js"></script>
-  <script src="core/protection.js"></script>
-  <script src="core/statistics.js"></script>
-  <script src="content/formatters/base.js"></script>
-  <script src="content/formatters/epub.js"></script>
-  <script src="content/formatters/txt.js"></script>
-  <script src="content/formatters/pdf.js"></script>
-  <script src="content/formatters/html.js"></script>
-  <script src="content/formatters/fb2.js"></script>
-  <script src="content/formatters/cbz.js"></script>
-  <script src="content/formatters/index.js"></script>
+  <script src="../core/theme-init.js"></script>
+  <script src="../core/theme.js"></script>
+  <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/prepare.css">
+  <link rel="stylesheet" href="../css/scale-subtle.css">
+  <script src="../libs/popper.min.js"></script>
+  <script src="../libs/tippy-bundle.umd.min.js"></script>
+  <script src="../libs/jszip.min.js"></script>
+  <script src="../libs/pica.min.js"></script>
+  <script src="../libs/pdf-lib.min.js"></script>
+  <script src="../libs/fontkit.umd.min.js"></script>
+  <script src="../libs/FileSaver.min.js"></script>
+  <script src="../core/api.js"></script>
+  <script src="../utils/protection.js"></script>
+  <script src="../utils/header.js"></script>
+  <script src="../core/statistics.js"></script>
+  <script src="../formatters/base.js"></script>
+  <script src="../formatters/epub.js"></script>
+  <script src="../formatters/txt.js"></script>
+  <script src="../formatters/pdf.js"></script>
+  <script src="../formatters/html.js"></script>
+  <script src="../formatters/fb2.js"></script>
+  <script src="../formatters/cbz.js"></script>
+  <script src="../formatters/index.js"></script>
 </head>
 <body>
   <div class="toolbar">
@@ -69,11 +70,11 @@
         </div>
       </div>
       <div class="image-server-selector" id="image-server-selector" style="display: none;">
-        <div class="server-select" id="server-select">Первый</div>
+        <div class="server-select" id="server-select">Сжатия</div>
         <div class="server-dropdown" id="server-dropdown" style="display: none;">
           <div class="server-option" data-value="normal">Первый</div>
           <div class="server-option" data-value="normal">Второй</div>
-          <div class="server-option" data-value="compressed">Сжатия</div>
+          <div class="server-option selected" data-value="compressed">Сжатия</div>
         </div>
       </div>
       <div class="text-only-toggle" id="text-only-toggle" style="display: none;">
@@ -224,8 +225,15 @@
       </div>
     </div>
   </div>
-  
-  <script src="core/prepare.js"></script>
-  <script src="core/download.js"></script>
+
+  <div class="scroll-buttons" id="scroll-buttons" style="display: none;">
+    <button class="scroll-btn" id="scroll-btn" title="Наверх">
+      <i class="fa-solid fa-chevron-up"></i>
+    </button>
+  </div>
+
+  <script src="../core/prepare.js"></script>
+  <script src="../core/download.js"></script>
+  <script src="../utils/scroll.js"></script>
 </body>
 </html>

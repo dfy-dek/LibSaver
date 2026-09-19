@@ -570,12 +570,13 @@ class Fb2Formatter extends BaseFormatter {
     }
 
     if (node.type === 'image') {
+      const caption = node.attrs?.description || '';
+
       if (this.options.quality === 'NONE') {
-        return '[Картинка]';
+        return caption ? `<p>${this.escapeXml(caption)}</p>[Картинка пропущена]` : '[Картинка пропущена]';
       }
-      
+
       const imagesData = node.attrs?.images;
-      let caption = node.attrs?.description || '';
       
       if (Array.isArray(imagesData) && imagesData.length > 0) {
         const attachmentMap = context.attachmentMap || {};

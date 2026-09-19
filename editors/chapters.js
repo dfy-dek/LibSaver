@@ -778,11 +778,6 @@ function initTranslatorPriorityPopup() {
   const popupContent = document.createElement('div');
   popupContent.className = 'translator-priority-popup';
 
-  const header = document.createElement('div');
-  header.className = 'translator-priority-header';
-  header.textContent = 'ВЕРХНИЙ > НИЖНИЙ';
-  popupContent.appendChild(header);
-
   const list = document.createElement('div');
   list.className = 'translator-priority-list';
   popupContent.appendChild(list);

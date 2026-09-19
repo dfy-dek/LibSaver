@@ -3,6 +3,58 @@ let options = {};
 let chaptersToDownload = [];
 let debugMode = false; // Флаг для детального логирования
 
+// Функция форматирования заголовков глав
+function formatChapterTitle(vol, num, name, tocFormat, customTocFormat, hideChapterName, hideVolumeNumber) {
+  const volStr = vol || '1';
+  const numStr = num || '1';
+  const nameStr = name || '';
+
+  // Пользовательский формат - галочки не работают
+  if (tocFormat === 'custom') {
+    if (customTocFormat) {
+      return customTocFormat
+        .replace('{vol}', volStr)
+        .replace('{num}', numStr)
+        .replace('{name}', nameStr)
+        .trim();
+    }
+    // Fallback если custom формат пустой
+    return `Том ${volStr}. Глава ${numStr}.${nameStr ? ' ' + nameStr : ''}`.trim();
+  }
+
+  // Встроенные форматы - учитываем галочки
+  let title = '';
+
+  switch (tocFormat) {
+    case 'format1':
+      title = `Том ${volStr} Глава ${numStr} ${nameStr}`;
+      break;
+    case 'format2':
+      title = `Том ${volStr} Глава ${numStr} ${nameStr ? '- ' + nameStr : ''}`;
+      break;
+    case 'format3':
+      title = `Том ${volStr} - Глава ${numStr} ${nameStr ? '- ' + nameStr : ''}`;
+      break;
+    case 'default':
+    default:
+      title = `Том ${volStr}. Глава ${numStr}.${nameStr ? ' ' + nameStr : ''}`;
+      break;
+  }
+
+  // Применяем галочки для встроенных форматов
+  if (hideVolumeNumber) {
+    // Убираем всё до "Глава" включительно
+    title = title.replace(/.*Глава\s*/, 'Глава ');
+  }
+
+  if (hideChapterName) {
+    // Убираем всё после номера главы (включая дробные номера типа 0.1)
+    title = title.replace(/(Глава\s+[\d.]+).*$/, '$1').trim();
+  }
+
+  return title.trim();
+}
+
 // Интервал обновления статистики
 let statsUpdateInterval = null;
 let totalBytesDownloaded = 0; // Общее количество скачанных байт
@@ -337,7 +389,7 @@ function resetDownloadState() {
     if (progressBar) progressBar.style.width = '0%';
     if (progressText) progressText.textContent = '0 / 0 глав';
     if (btnDownloadFile) btnDownloadFile.style.display = 'none';
-    
+
     // Очищаем лог
     if (logContainer) logContainer.innerHTML = '';
 }
@@ -347,7 +399,7 @@ async function startDownload() {
     // Очистка состояния перед новой загрузкой
     resetDownloadState();
 
-    chrome.storage.local.get(['downloadData', 'rateLimit', 'metadataFieldOrder', 'fieldLabels', 'debugLogging', 'epubTocPage', 'disableToc', 'titleData', 'currentSlug', 'speedMode', 'txtImageMarker', 'pdfFont', 'pdfFontSize', 'pdfPageSize', 'pdfLineSpacing', 'pdfParagraphSpacing'], async (result) => {
+    chrome.storage.local.get(['downloadData', 'rateLimit', 'metadataFieldOrder', 'fieldLabels', 'debugLogging', 'disableToc', 'titleData', 'currentSlug', 'speedMode', 'txtImageMarker', 'pdfFont', 'pdfFontSize', 'pdfPageSize', 'pdfLineSpacing', 'pdfParagraphSpacing', 'tocFormat', 'customTocFormat', 'hideChapterName', 'hideVolumeNumber'], async (result) => {
         // Устанавливаем режим детального логирования из настроек
         debugMode = result.debugLogging || false;
 
@@ -374,10 +426,8 @@ async function startDownload() {
         // Сохраняем настройку отключения оглавления (всегда берем из storage для актуального значения)
         disableToc = result.disableToc !== undefined ? result.disableToc : false;
         options.disableToc = disableToc;
-        
-        // Сохраняем настройку страницы оглавления в EPUB (всегда берем из storage для актуального значения)
-        options.epubTocPage = result.epubTocPage !== false; // Default true
-        
+        options.epubTocPage = !disableToc; // Когда оглавление включено, создаем отдельную страницу
+
         // Сохраняем переименованные названия полей
         options.fieldLabels = result.fieldLabels || {};
         
@@ -401,6 +451,11 @@ async function startDownload() {
             pdfFontSize: result.pdfFontSize || 12,
             pdfPageSize: result.pdfPageSize || 'A5',
             pdfLineSpacing: result.pdfLineSpacing !== undefined ? result.pdfLineSpacing : 2,
+            // Настройки заголовков
+            tocFormat: result.tocFormat || 'default',
+            customTocFormat: result.customTocFormat || '',
+            hideChapterName: result.hideChapterName || false,
+            hideVolumeNumber: result.hideVolumeNumber || false,
             pdfParagraphSpacing: result.pdfParagraphSpacing !== undefined ? result.pdfParagraphSpacing : 1
         };
 
@@ -443,6 +498,16 @@ async function startDownload() {
         // Помечаем все отфильтрованные главы как выбранные для форматтеров
         chaptersToDownload.forEach(ch => ch.selected = true);
 
+        // Переформатируем заголовки глав согласно настройкам перед скачиванием
+        const tocFormat = options.settings.tocFormat || 'default';
+        const customTocFormat = options.settings.customTocFormat || '';
+        const hideChapterName = options.settings.hideChapterName || false;
+        const hideVolumeNumber = options.settings.hideVolumeNumber || false;
+
+        chaptersToDownload.forEach(ch => {
+            ch.displayTitle = formatChapterTitle(ch.volume, ch.number, ch.name, tocFormat, customTocFormat, hideChapterName, hideVolumeNumber);
+        });
+
         // Обновляем progressText с правильным количеством глав
         if (progressText) progressText.textContent = `0 / ${chaptersToDownload.length} глав`;
 
@@ -472,6 +537,11 @@ async function startDownload() {
                 pdfJpegQuality: options.pdfJpegQuality || 1.0,
                 // Передаем настройки TXT
                 txtImageMarker: options.settings.txtImageMarker || 'numbered',
+                // Передаем настройки заголовков
+                tocFormat: options.settings.tocFormat || 'default',
+                customTocFormat: options.settings.customTocFormat || '',
+                hideChapterName: options.settings.hideChapterName || false,
+                hideVolumeNumber: options.settings.hideVolumeNumber || false,
                 // Передаем siteType для определения типа контента
                 siteType: options.siteType,
                 // Передаем параметры для manga
@@ -542,11 +612,6 @@ async function startDownload() {
               btnDownloadFile.style.display = 'flex';
             }
 
-            // Включаем контролы после завершения скачивания
-            if (window.enableControls) {
-              window.enableControls();
-            }
-            
             // Останавливаем интервал обновления статистики
             if (statsUpdateInterval) {
                 clearInterval(statsUpdateInterval);

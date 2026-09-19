@@ -12,7 +12,6 @@ let imageFormat = 'original'; // По умолчанию оригинальны�
 let pdfImageFormat = 'original-png'; // По умолчанию Исходный, иначе PNG для PDF
 let pdfJpegQuality = 1.0; // По умолчанию максимальное качество для PDF
 let disableToc = false;
-let epubTocPage = true; // По умолчанию включена страница оглавления в EPUB
 
 // Обработчик сообщений для toast от других окон
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -27,7 +26,7 @@ let customTocFormat = '';
 let hideChapterName = false;
 let hideVolumeNumber = false;
 
-chrome.storage.local.get(['imageQuality', 'coverQuality', 'resizeMethod', 'adaptiveRatio', 'jpegQuality', 'imageFormat', 'pdfImageFormat', 'pdfJpegQuality', 'disableToc', 'epubTocPage', 'tocFormat', 'customTocFormat', 'hideChapterName', 'hideVolumeNumber'], (result) => {
+chrome.storage.local.get(['imageQuality', 'coverQuality', 'resizeMethod', 'adaptiveRatio', 'jpegQuality', 'imageFormat', 'pdfImageFormat', 'pdfJpegQuality', 'disableToc', 'tocFormat', 'customTocFormat', 'hideChapterName', 'hideVolumeNumber'], (result) => {
   if (result.imageQuality) {
     savedQuality = result.imageQuality;
   }
@@ -54,9 +53,6 @@ chrome.storage.local.get(['imageQuality', 'coverQuality', 'resizeMethod', 'adapt
   }
   if (result.disableToc !== undefined) {
     disableToc = result.disableToc;
-  }
-  if (result.epubTocPage !== undefined) {
-    epubTocPage = result.epubTocPage;
   }
   if (result.tocFormat) {
     tocFormat = result.tocFormat;
@@ -153,7 +149,7 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 // Функция для получения случайной строки из текстового файла
 async function getRandomCoverInspectionText() {
   try {
-    const response = await fetch(chrome.runtime.getURL('local_data'));
+    const response = await fetch(chrome.runtime.getURL('assets/local_data'));
     if (!response.ok) {
       return 'Рассматриваем обложку...'; // Fallback если файл не доступен
     }
@@ -318,13 +314,13 @@ setupThemeMessageListener();
 // Функция загрузки SVG как inline
 async function loadInlineSvg() {
   const logoContainers = document.querySelectorAll('.lib-logo[data-svg]');
-  
+
   for (const container of logoContainers) {
     const svgPath = container.getAttribute('data-svg');
     if (!svgPath) continue;
-    
+
     try {
-      const response = await fetch(svgPath);
+      const response = await fetch(chrome.runtime.getURL(svgPath));
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -332,14 +328,6 @@ async function loadInlineSvg() {
       container.innerHTML = svgText;
     } catch (error) {
       console.error('Failed to load SVG:', svgPath, error);
-      // Fallback: попробуем через chrome.runtime.getURL
-      try {
-        const response = await fetch(chrome.runtime.getURL(svgPath));
-        const svgText = await response.text();
-        container.innerHTML = svgText;
-      } catch (error2) {
-        console.error('Failed to load SVG with chrome.runtime.getURL:', svgPath, error2);
-      }
     }
   }
 }
@@ -588,11 +576,25 @@ function openPopupWindow(url, withTargetTabId = false) {
         const storageData = { currentSlug, targetTabId, sourceUrl };
         
         chrome.storage.local.set(storageData, () => {
-          chrome.windows.create({
-            url: chrome.runtime.getURL(url),
-            type: 'popup',
-            width: 1280,
-            height: 720
+          const width = 1024;
+          const height = 768;
+
+          chrome.system.display.getInfo((displays) => {
+            const primaryDisplay = displays.find(d => d.isPrimary) || displays[0];
+            const bounds = primaryDisplay.workArea;
+
+            const left = Math.round(bounds.left + (bounds.width - width) / 2);
+            const top = Math.round(bounds.top + (bounds.height - height) / 2);
+
+            chrome.windows.create({
+              url: chrome.runtime.getURL(url),
+              type: 'popup',
+              width: width,
+              height: height,
+              left: left,
+              top: top,
+              focused: true
+            });
           });
         });
       });
@@ -623,7 +625,7 @@ document.getElementById('btn-edit-chapters').addEventListener('click', async () 
   titleData[currentSlug].toIdx = toIdx;
   await chrome.storage.local.set({ titleData });
   
-  openPopupWindow('chapters.html');
+  openPopupWindow('html/chapters.html');
 });
 
 // Глобальные переменные данных тайтла
@@ -633,12 +635,12 @@ let allCovers = []; // Все обложки из popup
 
 // Кнопка редактора обложек
 document.getElementById('btn-covers').addEventListener('click', () => {
-  openPopupWindow('covers.html', true);
+  openPopupWindow('html/covers.html', true);
 });
 
 // Кнопка настроек метаданных
 document.getElementById('btn-metadata').addEventListener('click', async () => {
-  openPopupWindow('metadata.html', true);
+  openPopupWindow('html/metadata.html', true);
 });
 
 // Кнопка скачивания
@@ -681,13 +683,13 @@ document.getElementById('btn-download').addEventListener('click', () => {
         translatorPriority: translatorPriority, // Добавляем приоритет переводчиков
         chapterBranchOverrides: chapterBranchOverrides, // Добавляем переопределения переводчиков
         disableToc: disableToc,
-        epubTocPage: epubTocPage,
+        epubTocPage: !disableToc, // Вычисляем значение из disableToc
         tabId: currentTabId,
         siteType: siteType
       };
 
       chrome.storage.local.set({ downloadData }, () => {
-        openPopupWindow('prepare.html', true);
+        openPopupWindow('html/prepare.html', true);
       });
     });
   });
@@ -830,7 +832,7 @@ document.getElementById('btn-animelib').addEventListener('click', async () => {
 
 // Кнопка настроек
 document.getElementById('btn-settings').addEventListener('click', () => {
-  openPopupWindow('settings.html');
+  openPopupWindow('html/settings.html');
 });
 
 // Обработка сырых данных из API

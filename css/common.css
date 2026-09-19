@@ -94,16 +94,17 @@
 /* Стили для disabled чекбоксов */
 input[type="checkbox"]:disabled {
   opacity: 0.6;
-  cursor: not-allowed;
+  cursor: default;
 }
 
 input[type="checkbox"]:disabled ~ .control__indicator {
   opacity: 0.6;
-  cursor: not-allowed;
+  cursor: default;
 }
 
 input[type="checkbox"]:disabled ~ .control__indicator svg {
   opacity: 0.6;
+  cursor: default;
 }
 
 /* Стили для текста рядом с disabled чекбоксами */
@@ -111,7 +112,25 @@ input[type="checkbox"]:disabled ~ .chapter-label,
 input[type="checkbox"]:disabled ~ .volume-label,
 input[type="checkbox"]:disabled ~ * {
   opacity: 0.6;
-  cursor: not-allowed;
+  cursor: default;
+}
+
+/* Стили для disabled checkbox-group */
+.checkbox-group-disabled {
+  cursor: default !important;
+}
+
+.checkbox-group-disabled * {
+  cursor: default !important;
+}
+
+/* Дополнительное правило для label.checkbox-group с disabled чекбоксом */
+label.checkbox-group:has(input[type="checkbox"]:disabled) {
+  cursor: default !important;
+}
+
+label.checkbox-group:has(input[type="checkbox"]:disabled) * {
+  cursor: default !important;
 }
 
 [data-theme="light"] {
@@ -380,7 +399,7 @@ button:hover {
 
 button:disabled {
   background-color: var(--border-color);
-  cursor: not-allowed;
+  cursor: default;
   opacity: 0.6;
   transform: none;
 }
@@ -484,4 +503,42 @@ button:disabled {
 
 [data-theme="light"] .checkbox-group:hover .control__indicator {
   color: var(--border-color);
+}
+
+/* Стили кнопок прокрутки */
+.scroll-buttons {
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.15s ease-in-out;
+}
+
+.scroll-btn {
+  width: 40px;
+  height: 40px;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--text-primary);
+  cursor: pointer;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, opacity 0.15s ease-in-out, visibility 0.15s ease-in-out;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  visibility: hidden;
+}
+
+.scroll-btn:hover {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-hover);
+}
+
+.scroll-btn i {
+  font-size: 16px;
+  transition: transform 0.15s ease-in-out;
 }

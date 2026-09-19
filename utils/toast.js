@@ -2,6 +2,10 @@
 
 let toastQueue = [];
 const MAX_TOASTS = 2;
+const toastTimers = new Map(); // Храним ссылки на таймеры
+const toastSlots = new Map(); // Храним занятые слоты (0, 1)
+const TOAST_HEIGHT = 24; // Высота одного toast + отступ
+const TOAST_GAP = 8; // Отступ между toast
 
 // Показать toast уведомление
 function showToast(message, type = 'success') {
@@ -10,12 +14,12 @@ function showToast(message, type = 'success') {
     type,
     id: Date.now()
   };
-  
+
   // Ограничиваем количество toast в очереди
   if (toastQueue.length >= MAX_TOASTS) {
-    toastQueue.shift(); // Удаляем самый старый
+    return; // Не удаляем старый, просто игнорируем новый
   }
-  
+
   toastQueue.push(toast);
   processToastQueue();
 }
@@ -23,13 +27,13 @@ function showToast(message, type = 'success') {
 // Обработка очереди toast
 function processToastQueue() {
   if (toastQueue.length === 0) return;
-  
+
   // Проверяем количество видимых toast
   const visibleToasts = document.querySelectorAll('.toast.show');
   if (visibleToasts.length >= MAX_TOASTS) {
     return; // Ждём пока освободится место
   }
-  
+
   const toastData = toastQueue.shift();
   createToastElement(toastData);
 }
@@ -38,33 +42,60 @@ function processToastQueue() {
 function createToastElement(toastData) {
   const container = document.getElementById('toast-container');
   if (!container) return;
-  
+
   const toast = document.createElement('div');
   toast.className = `toast ${toastData.type}`;
   toast.id = `toast-${toastData.id}`;
-  
+
   const icon = toastData.type === 'success' ? 'fa-check' : 'fa-xmark';
   toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${toastData.message}</span>`;
-  
+
   container.appendChild(toast);
-  
+
+  // Находим свободный слот
+  let slot = 0;
+  while (toastSlots.has(slot)) {
+    slot++;
+  }
+
+  // Занимаем слот
+  toastSlots.set(slot, toastData.id);
+  toast.dataset.slot = slot;
+
+  // Вычисляем позицию в зависимости от слота
+  const position = slot * (TOAST_HEIGHT + TOAST_GAP);
+  toast.style.top = `${position}px`;
+
   // Force reflow
   toast.offsetHeight;
-  
+
   // Показываем toast
   toast.classList.add('show');
-  
-  // Автоматически скрываем через 2 секунды
-  setTimeout(() => {
+
+  // Автоматически скрываем через 2 секунды и сохраняем ссылку на таймер
+  const timer = setTimeout(() => {
     hideToast(toast);
-  }, 2000);
+  }, 1200);
+  toastTimers.set(toast.id, timer);
 }
 
 // Скрытие toast
 function hideToast(toast) {
+  // Очищаем таймер если есть
+  if (toastTimers.has(toast.id)) {
+    clearTimeout(toastTimers.get(toast.id));
+    toastTimers.delete(toast.id);
+  }
+
+  // Освобождаем слот
+  const slot = toast.dataset.slot;
+  if (slot !== undefined) {
+    toastSlots.delete(parseInt(slot));
+  }
+
   toast.classList.remove('show');
   toast.classList.add('hide');
-  
+
   setTimeout(() => {
     toast.remove();
     processToastQueue();

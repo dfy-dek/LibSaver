@@ -39,17 +39,18 @@ class TxtFormatter extends BaseFormatter {
     // Проверяем, нужно ли скачивать картинки
     const textOnly = this.options.textOnly || false;
     const includeImages = !textOnly && this.options.quality !== 'NONE';
+    const includeCovers = !textOnly && this.options.coverQuality !== 'NONE';
 
     let coversStats = { downloaded: 0, failed: 0, total: 0 };
-    if (includeImages) {
+    if (includeCovers) {
       // Скачиваем обложки в ZIP
       coversStats = await this.processCovers(this.zip);
     } else {
-      // В режиме Только текст - только считаем обложки по URL (не скачиваем)
+      // В режиме "Без обложек" или "Только текст" - только считаем обложки по URL (не скачиваем)
       const metadata = this.options.metadata || {};
       const allCovers = this.options.allCovers || [metadata.cover || this.options.originalCover || ''];
       const coversToDownload = allCovers.filter(c => c);
-      coversStats = { downloaded: coversToDownload.length, failed: 0, total: coversToDownload.length };
+      coversStats = { downloaded: 0, failed: 0, total: coversToDownload.length };
     }
 
     // Обрабатываем главы
@@ -190,6 +191,10 @@ class TxtFormatter extends BaseFormatter {
     const allCovers = this.options.allCovers || [metadata.cover || this.options.originalCover || ''];
     const coversToDownload = allCovers.filter(c => c);
 
+    if (coverQuality === 'NONE') {
+      return { downloaded: 0, failed: 0, total: coversToDownload.length };
+    }
+
     if (coversToDownload.length === 0) {
       return { downloaded: 0, failed: 0, total: 0 };
     }
@@ -244,43 +249,22 @@ class TxtFormatter extends BaseFormatter {
 
   async convertJsonToText(chapterContent, context = {}) {
     if (!chapterContent) return '';
-    
+
     let text = '';
-    
-    if (this.options.addLog && this.options.debug) {
-      this.options.addLog(`convertJsonToText: chapterContent type = ${typeof chapterContent.content}`);
-      this.options.addLog(`convertJsonToText: chapterContent keys = ${Object.keys(chapterContent).join(', ')}`);
-      if (!chapterContent.content) {
-        this.options.addLog(`convertJsonToText: chapterContent = ${JSON.stringify(chapterContent).substring(0, 500)}`);
-      }
-    }
-    
+
     if (chapterContent.content) {
       // Если content - это HTML строка, парсим её
       if (typeof chapterContent.content === 'string') {
-        if (this.options.addLog && this.options.debug) {
-          this.options.addLog(`Processing HTML content, length: ${chapterContent.content.length}`);
-        }
         text += this.htmlToText(chapterContent.content);
       } else {
         // Если content - это JSON структура, обрабатываем через processNode
-        if (this.options.addLog && this.options.debug) {
-          this.options.addLog(`Processing JSON content structure`);
-        }
         text += await this.processNode(chapterContent.content, context);
       }
     } else {
       // Если content нет, пробуем обработать сам chapterContent как структуру
-      if (this.options.addLog && this.options.debug) {
-        this.options.addLog(`No content field, trying to process chapterContent directly`);
-      }
       text += await this.processNode(chapterContent, context);
     }
-    
-    if (this.options.addLog && this.options.debug) {
-      this.options.addLog(`convertJsonToText result length: ${text.length}`);
-    }
-    
+
     return text;
   }
 
@@ -338,6 +322,7 @@ class TxtFormatter extends BaseFormatter {
     if (node.type === 'image') {
       const textOnly = context.textOnly || false;
       const includeImages = context.includeImages !== false && this.options.quality !== 'NONE';
+      const caption = node.attrs?.description || '';
 
       if (textOnly || !includeImages) {
         // Определяем маркер из настроек
@@ -346,17 +331,16 @@ class TxtFormatter extends BaseFormatter {
         let marker = '';
         if (markerStyle === 'numbered') {
           const imageNumber = getNextImageNumber();
-          marker = `[Картинка ${imageNumber}]\n`;
+          marker = `[Картинка ${imageNumber}]${caption ? ` - ${caption}` : ''}\n`;
         } else if (markerStyle === 'simple') {
-          marker = '[Картинка]\n';
+          marker = `[Картинка]${caption ? ` - ${caption}` : ''}\n`;
         } else {
-          marker = '\n';
+          marker = caption ? `${caption}\n` : '\n';
         }
         return marker;
       }
-      
+
       const imagesData = node.attrs?.images;
-      let caption = node.attrs?.description || '';
       
       if (Array.isArray(imagesData) && imagesData.length > 0) {
         const attachmentMap = context.attachmentMap || {};
@@ -645,14 +629,15 @@ class TxtFormatter extends BaseFormatter {
       const markerStyle = this.options.txtImageMarker || 'numbered';
       const images = doc.querySelectorAll('img');
       for (const img of images) {
+        const caption = img.alt || '';
         let marker = '';
         if (markerStyle === 'numbered') {
           const imageNumber = getNextImageNumber();
-          marker = `\n[Картинка ${imageNumber}]\n`;
+          marker = `\n[Картинка ${imageNumber}]${caption ? ` - ${caption}` : ''}\n`;
         } else if (markerStyle === 'simple') {
-          marker = '\n[Картинка]\n';
+          marker = `\n[Картинка]${caption ? ` - ${caption}` : ''}\n`;
         } else {
-          marker = '\n';
+          marker = caption ? `\n${caption}\n` : '\n';
         }
         img.outerHTML = marker;
       }

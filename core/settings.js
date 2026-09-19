@@ -77,12 +77,20 @@ function applySettingsToUI(settings, metadataFields) {
   document.getElementById('jpeg-quality-value').textContent = settings.jpegQuality || 1.0;
   document.getElementById('image-format').value = settings.imageFormat || 'original';
   document.getElementById('disable-toc').checked = settings.disableToc || false;
-  document.getElementById('epub-toc-page').checked = settings.epubTocPage !== false; // Default true
   document.getElementById('disable-site-menu').checked = settings.disableSiteMenu || false;
   document.getElementById('debug-logging').checked = settings.debugLogging || false;
 
   // PDF settings
-  document.getElementById('pdf-font').value = settings.pdfFont || 'dejavu-sans';
+  document.getElementById('pdf-font').value = settings.pdfFont || 'merriweather';
+  // Применяем шрифт к select
+  const fontSelect = document.getElementById('pdf-font');
+  if (fontSelect) {
+    const selectedOption = fontSelect.options[fontSelect.selectedIndex];
+    if (selectedOption) {
+      const fontName = selectedOption.textContent;
+      fontSelect.style.fontFamily = fontName;
+    }
+  }
   document.getElementById('pdf-font-size').value = settings.pdfFontSize || 12;
   document.getElementById('pdf-page-size').value = settings.pdfPageSize || 'A5';
   document.getElementById('pdf-line-spacing').value = settings.pdfLineSpacing !== undefined ? String(settings.pdfLineSpacing) : '2';
@@ -337,7 +345,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     'jpegQuality',
     'imageFormat',
     'disableToc',
-    'epubTocPage',
     'disableSiteMenu',
     'debugLogging',
     'tocFormat',
@@ -535,7 +542,6 @@ document.getElementById('btn-save').addEventListener('click', async () => {
     jpegQuality: parseFloat(document.getElementById('jpeg-quality').value),
     imageFormat: document.getElementById('image-format').value,
     disableToc: document.getElementById('disable-toc').checked,
-    epubTocPage: document.getElementById('epub-toc-page').checked,
     disableSiteMenu: document.getElementById('disable-site-menu').checked,
     debugLogging: document.getElementById('debug-logging').checked,
     tocFormat: document.getElementById('toc-format').value,
@@ -588,14 +594,11 @@ const DEFAULT_SETTINGS_BY_GROUP = {
     'hide-chapter-name': false,
     'hide-volume-number': false
   },
-  epub: {
-    'epub-toc-page': true
-  },
   txt: {
     'txt-image-marker': 'numbered'
   },
   pdf: {
-    'pdf-font': 'dejavu-sans',
+    'pdf-font': 'merriweather',
     'pdf-font-size': 12,
     'pdf-page-size': 'A5',
     'pdf-line-spacing': 2,
@@ -677,30 +680,6 @@ function resetGroupSettings(group) {
 
     // Обновляем видимость полей после сброса
     updateJpegQualityFieldVisibility();
-  } else if (group === 'epub') {
-    // Сброс настроек EPUB
-    for (const [key, value] of Object.entries(defaults)) {
-      const element = document.getElementById(key);
-      if (!element) continue;
-
-      if (element.type === 'checkbox') {
-        element.checked = value;
-        // Убираем inline стили, чтобы CSS работал корректно
-        const indicator = element.parentElement.querySelector('.control__indicator');
-        if (indicator) {
-          const checkedIcon = indicator.querySelector('i[data-state="checked"]');
-          const defaultIcon = indicator.querySelector('i[data-state="default"]');
-          if (checkedIcon) checkedIcon.style.display = '';
-          if (defaultIcon) defaultIcon.style.display = '';
-          if (checkedIcon) checkedIcon.style.color = '';
-        }
-      } else if (element.tagName === 'SELECT' || element.tagName === 'INPUT') {
-        element.value = value;
-      }
-    }
-
-    // Обновляем видимость полей после сброса
-    updateJpegQualityFieldVisibility();
   } else if (group === 'pdf') {
     // Сброс настроек PDF
     for (const [key, value] of Object.entries(defaults)) {
@@ -754,6 +733,18 @@ function resetGroupSettings(group) {
     updateJpegQualityFieldVisibility();
   }
 
+  // Применяем шрифт к select после сброса PDF группы
+  if (group === 'pdf') {
+    const fontSelect = document.getElementById('pdf-font');
+    if (fontSelect) {
+      const selectedOption = fontSelect.options[fontSelect.selectedIndex];
+      if (selectedOption) {
+        const fontName = selectedOption.textContent;
+        fontSelect.style.fontFamily = fontName;
+      }
+    }
+  }
+
   // Устанавливаем флаг, что изменения не сохранены
   wasSaved = false;
 }
@@ -768,7 +759,7 @@ document.getElementById('btn-reset').addEventListener('click', async () => {
     enableMetadataEditor: true,
     enableCoverEditor: true,
     enableChaptersEditor: true,
-    disableToc: false,
+    disableToc: false, // Включено по умолчанию - оглавление + отдельная страница
     tocFormat: 'default',
     customTocFormat: '',
     hideChapterName: false,
@@ -791,6 +782,16 @@ document.getElementById('btn-reset').addEventListener('click', async () => {
   // Применяем дефолтные настройки к UI (но не сохраняем в storage)
   applySettingsToUI(defaultSettings, DEFAULT_METADATA_FIELDS);
 
+  // Применяем шрифт к select после полного сброса
+  const fontSelect = document.getElementById('pdf-font');
+  if (fontSelect) {
+    const selectedOption = fontSelect.options[fontSelect.selectedIndex];
+    if (selectedOption) {
+      const fontName = selectedOption.textContent;
+      fontSelect.style.fontFamily = fontName;
+    }
+  }
+
   // Обновляем видимость полей после сброса
   updateTocFormatFields();
   updateResizeMethodVisibility();
@@ -802,40 +803,6 @@ document.getElementById('btn-reset').addEventListener('click', async () => {
   wasSaved = false;
 });
 
-// Инициализация tippy для кнопок помощи
-let tippyInstances = [];
-
-function initTippyTooltips() {
-  // Проверяем, загружена ли библиотека tippy
-  if (typeof window.tippy === 'undefined') {
-    console.error('tippy library not loaded');
-    return;
-  }
-
-  // Удаляем существующие инстансы
-  tippyInstances.forEach(instance => instance.destroy());
-  tippyInstances = [];
-
-  const helpButtons = document.querySelectorAll('.btn-help-group');
-  helpButtons.forEach(button => {
-    const tooltipText = button.getAttribute('data-tooltip');
-    if (tooltipText) {
-      // Передаем HTML-строку, а не DOM-узел
-      const instance = window.tippy(button, {
-        content: `<div class="settings-tooltip-wrapper">${tooltipText}</div>`,
-        allowHTML: true,
-        placement: 'bottom',
-        trigger: 'mouseenter',
-        interactive: true,
-        arrow: false,
-        hideOnClick: false
-      });
-
-      tippyInstances.push(instance);
-    }
-  });
-}
-
 // Переопределяем слушатель сообщений для обновления темы
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'updateTheme' && message.theme) {
@@ -843,20 +810,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
-// Инициализируем tippy после загрузки DOM
+// Инициализируем после загрузки DOM
 document.addEventListener('DOMContentLoaded', () => {
-  initTippyTooltips();
-
   // Загружаем шрифты для превью в селекторе
   const fontSelect = document.getElementById('pdf-font');
   if (fontSelect) {
     const fonts = [
-      { name: 'DejaVu Sans', path: 'fonts/DejaVu Sans/DejaVuSans.ttf' },
-      { name: 'Inter', path: 'fonts/Inter/Inter-Regular.ttf' },
-      { name: 'Merriweather', path: 'fonts/Merriweather/Merriweather-Regular.ttf' },
-      { name: 'Montserrat', path: 'fonts/Montserrat/Montserrat-Regular.ttf' },
-      { name: 'Open Sans', path: 'fonts/Open_Sans/OpenSans-Regular.ttf' },
-      { name: 'Roboto', path: 'fonts/Roboto/Roboto-Regular.ttf' }
+      { name: 'DejaVu Sans', path: 'assets/fonts/DejaVuSans.ttf' },
+      { name: 'Inter', path: 'assets/fonts/Inter-Regular.ttf' },
+      { name: 'Merriweather', path: 'assets/fonts/Merriweather-Regular.ttf' },
+      { name: 'Montserrat', path: 'assets/fonts/Montserrat-Regular.ttf' },
+      { name: 'Open Sans', path: 'assets/fonts/OpenSans-Regular.ttf' },
+      { name: 'Roboto', path: 'assets/fonts/Roboto-Regular.ttf' },
+      { name: 'Playfair Display', path: 'assets/fonts/PlayfairDisplay-Regular.ttf' },
+      { name: 'Noto Serif', path: 'assets/fonts/NotoSerif-Regular.ttf' },
+      { name: 'Lora', path: 'assets/fonts/Lora-Regular.ttf' },
+      { name: 'Crimson Text', path: 'assets/fonts/CrimsonText-Regular.ttf' }
     ];
 
     // Загружаем каждый шрифт через FontFace API
@@ -886,12 +855,47 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// Инициализация tippy для кнопки помощи на toolbar
+let tippyInstance = null;
+
+function initToolbarTippy() {
+  if (typeof window.tippy === 'undefined') {
+    console.error('tippy library not loaded');
+    return;
+  }
+
+  if (tippyInstance) {
+    tippyInstance.destroy();
+  }
+
+  const helpButton = document.querySelector('.btn-help-toolbar');
+  if (helpButton) {
+    const tooltipText = helpButton.getAttribute('data-tooltip');
+    if (tooltipText) {
+      tippyInstance = window.tippy(helpButton, {
+        content: `<div class="toolbar-tooltip-wrapper">${tooltipText}</div>`,
+        allowHTML: true,
+        placement: 'bottom',
+        trigger: 'mouseenter',
+        interactive: true,
+        arrow: false,
+        hideOnClick: false,
+        offset: [0, 4]
+      });
+    }
+  }
+}
+
+// Инициализируем после загрузки DOM
+document.addEventListener('DOMContentLoaded', () => {
+  initToolbarTippy();
+});
+
 // Отправляем toast при закрытии без сохранения
 window.addEventListener('beforeunload', () => {
-  // Очистка tippy instances
-  tippyInstances.forEach(instance => instance.destroy());
-  tippyInstances = [];
-  
+  if (tippyInstance) {
+    tippyInstance.destroy();
+  }
   if (!wasSaved) {
     chrome.runtime.sendMessage({ action: 'showToast', message: 'Отменено!', type: 'cancel' });
   }

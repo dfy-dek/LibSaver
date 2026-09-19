@@ -51,8 +51,105 @@ body {
   border: none !important;
 }
 
-.btn-help-group {
-  cursor: default !important;
+.btn-help-toolbar {
+  background: none !important;
+  border: none !important;
+  color: var(--text-secondary);
+  cursor: default;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 11px;
+  border-radius: var(--border-radius);
+  transition: color 0.15s ease-in-out;
+}
+
+.btn-help-toolbar:hover {
+  color: var(--text-primary);
+  background: none !important;
+  border: none !important;
+  cursor: default;
+}
+
+/* Переопределение стилей tippy */
+.tippy-box {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.tippy-content {
+  padding: 0 !important;
+}
+
+.tippy-box[data-placement^='bottom'] > .tippy-arrow {
+  display: none;
+}
+
+.toolbar-tooltip-wrapper {
+  padding: 8px 12px;
+  max-width: max-content;
+  background: #0a0a0a;
+  border: 1px solid #414143;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  font-size: 12px;
+  line-height: 1.2;
+  color: var(--text-primary);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.toolbar-tooltip-wrapper a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.toolbar-tooltip-wrapper a:hover {
+  text-decoration: underline;
+}
+
+.toolbar-tooltip-wrapper .github-btn:hover {
+  text-decoration: none !important;
+}
+
+[data-theme="light"] .toolbar-tooltip-wrapper {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.github-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.github-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+.github-btn:hover {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-hover);
+  text-decoration: none;
+}
+
+.github-btn i {
+  font-size: 20px;
+}
+
+.email-btn i {
+  font-size: 20px;
 }
 
 .field {
@@ -240,37 +337,4 @@ body {
 .accent-dropdown-option.selected {
   background: var(--accent-soft);
   color: var(--text-primary);
-}
-
-/* Переопределение стилей tippy */
-.tippy-box {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-.tippy-content {
-  padding: 0 !important;
-}
-
-.tippy-box[data-placement^='bottom'] > .tippy-arrow {
-  display: none;
-}
-
-.settings-tooltip-wrapper {
-  padding: 8px 12px;
-  width: max-content;
-  background: #0a0a0a;
-  border: 1px solid #3b3d45;
-  border-radius: var(--border-radius);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  font-size: 12px;
-  line-height: 1.4;
-  color: var(--text-primary);
-  text-wrap: balance;
-}
-
-[data-theme="light"] .settings-tooltip-wrapper {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
 }

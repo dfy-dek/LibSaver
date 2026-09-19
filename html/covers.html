@@ -7,11 +7,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="core/theme-init.js"></script>
-  <script src="libs/Sortable.min.js"></script>
-  <link rel="stylesheet" href="css/scale-subtle.css">
-  <link rel="stylesheet" href="css/common.css">
-  <link rel="stylesheet" href="css/editor.css">
+  <script src="../core/theme-init.js"></script>
+  <script src="../libs/Sortable.min.js"></script>
+  <link rel="stylesheet" href="../css/scale-subtle.css">
+  <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/editor.css">
   <style>
     body {
       min-width: 450px;
@@ -319,7 +319,7 @@
   
   <div class="container">
     <div id="editor-disabled-message" class="editor-disabled-message" style="display: none;">
-      <img src="content/disable.gif" alt="Editor disabled" class="disabled-gif">
+      <img src="../assets/gif/disable.gif" alt="Editor disabled" class="disabled-gif">
       <p>Данный редактор утратил свою силу...</p>
       <p style="font-size: 12px;">"Без обложек" выбрано в настройках...</p>
     </div>
@@ -327,16 +327,22 @@
       <div class="empty-state">Нет обложек</div>
     </div>
   </div>
-  
+
+  <div class="scroll-buttons" id="scroll-buttons" style="display: none;">
+    <button class="scroll-btn" id="scroll-btn" title="Наверх">
+      <i class="fa-solid fa-chevron-up"></i>
+    </button>
+  </div>
+
   <input type="file" id="file-input" accept="image/*" style="display: none;">
   
-  <script src="libs/jszip.min.js"></script>
-  <script src="libs/FileSaver.min.js"></script>
-  <script src="libs/pica.min.js"></script>
-  <script src="libs/Sortable.min.js"></script>
-  <script src="libs/popper.min.js"></script>
-  <script src="libs/tippy-bundle.umd.min.js"></script>
-  <script src="core/theme.js"></script>
-  <script src="editors/covers.js"></script>
+  <script src="../libs/jszip.min.js"></script>
+  <script src="../libs/FileSaver.min.js"></script>
+  <script src="../libs/pica.min.js"></script>
+  <script src="../libs/popper.min.js"></script>
+  <script src="../libs/tippy-bundle.umd.min.js"></script>
+  <script src="../core/theme.js"></script>
+  <script src="../editors/covers.js"></script>
+  <script src="../utils/scroll.js"></script>
 </body>
 </html>

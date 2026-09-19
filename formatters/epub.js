@@ -48,15 +48,15 @@ class EpubFormatter extends BaseFormatter {
     this.addInfoPage(oebps, metadata);
     
     const imagesStats = await this.processChapters(filteredChapters, chapterFiles, imagesFolder, oebps);
-    
+
     // Добавляем страницу оглавления если включено в настройках
-    const epubTocPage = this.options.epubTocPage !== false; // Default true
-    if (epubTocPage) {
+    const disableToc = this.options.disableToc || false;
+    if (!disableToc) {
       this.addTocPage(oebps, chapterFiles);
     }
-    
+
     this.generateNcx(oebps, chapterFiles, metadata);
-    this.generateOpf(oebps, chapterFiles, metadata, epubTocPage);
+    this.generateOpf(oebps, chapterFiles, metadata, !disableToc);
 
     // Выводим предупреждение о главах старого формата (только для ранобэ)
     if (this.isRanobe && window.getStatisticsValue) {
@@ -119,9 +119,6 @@ class EpubFormatter extends BaseFormatter {
     const coverQuality = this.options.coverQuality || 'ORIGINAL';
 
     if (coverQuality === 'NONE') {
-      if (this.options.addLog) {
-        this.options.addLog('Скачивание обложек отключено (выбрано "Без обложек")');
-      }
       return 0;
     }
 
@@ -453,6 +450,11 @@ class EpubFormatter extends BaseFormatter {
     const chapterBranchOverrides = this.options.chapterBranchOverrides || {};
     const translatorPriority = this.options.translatorPriority || [];
 
+    // Если выбрано "Без картинок", пропускаем мангу
+    if (imageQuality === 'NONE') {
+      return { downloaded: 0, failed: 0 };
+    }
+
     let totalImagesDownloaded = 0;
     let totalImagesFailed = 0;
     let globalImageCounter = 1;
@@ -730,7 +732,9 @@ ${chapterHtml}
         const doc = parser.parseFromString(`<div>${node}</div>`, 'text/html');
         const images = doc.querySelectorAll('img');
         for (const img of images) {
-          img.outerHTML = '<span class="image-placeholder">[Изображение пропущено]</span>';
+          const alt = img.alt || '';
+          const placeholder = alt ? `<span class="image-placeholder">[Изображение пропущено: ${alt}]</span>` : '<span class="image-placeholder">[Изображение пропущено]</span>';
+          img.outerHTML = placeholder;
         }
         return doc.body.innerHTML;
       }
@@ -818,14 +822,16 @@ ${chapterHtml}
     }
 
     if (node.type === 'image') {
+      const caption = node.attrs?.description || '';
+      const captionHtml = caption ? `<p class="image-caption">${caption}</p>` : '';
+
       if (this.options.quality === 'NONE') {
-        return '<span class="image-placeholder">[Картинка]</span>';
+        return `${captionHtml}<span class="image-placeholder">[Картинка пропущена]</span>`;
       }
-      
+
       const imagesData = node.attrs?.images;
-      let caption = node.attrs?.description || '';
-      caption = caption.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-      
+      let captionEscaped = caption.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
       // Проверяем, есть ли массив изображений (группа картинок)
       if (Array.isArray(imagesData) && imagesData.length > 0) {
         const attachmentMap = context.attachmentMap || {};
@@ -859,14 +865,14 @@ ${chapterHtml}
                 const imgId = `${getNextImageNumber()}${imgExtension}`;
                 if (imagesFolder) {
                   imagesFolder.file(imgId, blob);
-                  imagesHtml += `<img src="images/${imgId}" alt="${caption || 'Иллюстрация'}" />`;
+                  imagesHtml += `<img src="images/${imgId}" alt="${captionEscaped || 'Иллюстрация'}" />`;
                 } else {
                   const reader = new FileReader();
                   const base64 = await new Promise(r => {
                     reader.onloadend = () => r(reader.result);
                     reader.readAsDataURL(blob);
                   });
-                  imagesHtml += `<img src="${base64}" alt="${caption || 'Иллюстрация'}" />`;
+                  imagesHtml += `<img src="${base64}" alt="${captionEscaped || 'Иллюстрация'}" />`;
                 }
                 onImageDownloaded();
               } catch (e) {
@@ -1022,7 +1028,7 @@ ${chapterHtml}
     return "";
   }
 
-  generateOpf(oebps, chapterFiles, metadata, epubTocPage = true) {
+  generateOpf(oebps, chapterFiles, metadata, createTocPage = true) {
     const originalMetadata = this.options.originalMetadata || {};
     const titleRu = metadata.titleRu || originalMetadata.titleRu || originalMetadata.titleEn || originalMetadata.titleOriginal || 'Без названия';
     const author = metadata.author || '';
@@ -1091,7 +1097,7 @@ ${chapterHtml}
       manifestItems += '    <item id="info" href="info.xhtml" media-type="application/xhtml+xml"/>\n';
     }
     
-    if (epubTocPage && this.zip.files['OEBPS/toc.xhtml']) {
+    if (createTocPage && this.zip.files['OEBPS/toc.xhtml']) {
       manifestItems += '    <item id="toc" href="toc.xhtml" media-type="application/xhtml+xml"/>\n';
     }
     
@@ -1140,7 +1146,7 @@ ${manifestItems}
         return '';
     }).join('\n    ')}
     ${this.zip.files['OEBPS/info.xhtml'] ? '<itemref idref="info"/>' : ''}
-    ${epubTocPage && this.zip.files['OEBPS/toc.xhtml'] ? '<itemref idref="toc"/>\n' : ''}
+    ${createTocPage && this.zip.files['OEBPS/toc.xhtml'] ? '<itemref idref="toc"/>\n' : ''}
     ${spine}
   </spine>
   <guide>

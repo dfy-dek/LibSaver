@@ -7,9 +7,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="core/theme-init.js"></script>
-  <link rel="stylesheet" href="css/common.css">
-  <link rel="stylesheet" href="css/editor.css">
+  <script src="../core/theme-init.js"></script>
+  <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/editor.css">
   <style>
     .chapters-list {
       flex: 1;
@@ -277,11 +277,18 @@
       <!-- Список глав для редактирования -->
     </div>
   </div>
-  
-  <script src="libs/popper.min.js"></script>
-  <script src="libs/tippy-bundle.umd.min.js"></script>
-  <script src="core/formatUtils.js"></script>
-  <script src="core/theme.js"></script>
-  <script src="editors/chapters.js"></script>
+
+  <div class="scroll-buttons" id="scroll-buttons" style="display: none;">
+    <button class="scroll-btn" id="scroll-btn" title="Наверх">
+      <i class="fa-solid fa-chevron-up"></i>
+    </button>
+  </div>
+
+  <script src="../libs/popper.min.js"></script>
+  <script src="../libs/tippy-bundle.umd.min.js"></script>
+  <script src="../utils/header.js"></script>
+  <script src="../core/theme.js"></script>
+  <script src="../editors/chapters.js"></script>
+  <script src="../utils/scroll.js"></script>
 </body>
 </html>

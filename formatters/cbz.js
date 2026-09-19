@@ -9,6 +9,7 @@ class CbzFormatter extends BaseFormatter {
     const addLog = this.options.addLog || (() => {});
     const imageServer = this.options.imageServer || 'normal';
     const format = this.options.format || 'cbz';
+    const imageQuality = this.options.quality || 'ORIGINAL';
 
     // Настройки перевода
     const chapterBranchOverrides = this.options.chapterBranchOverrides || {};
@@ -267,7 +268,13 @@ class CbzFormatter extends BaseFormatter {
       if (this.options.recordChapterTime) {
         this.options.recordChapterTime();
       }
-      
+
+      // Проверяем, отключено ли скачивание картинок
+      const imageQuality = this.options.quality || 'ORIGINAL';
+      if (imageQuality === 'NONE') {
+        continue; // Пропускаем скачивание страниц для этой главы
+      }
+
       // Скачиваем и добавляем изображения в архив
       let pageIndex = 0;
       while (pageIndex < pagesResult.pages.length) {
@@ -386,9 +393,6 @@ class CbzFormatter extends BaseFormatter {
     const coverQuality = this.options.coverQuality || 'ORIGINAL';
 
     if (coverQuality === 'NONE') {
-      if (this.options.addLog) {
-        this.options.addLog('Скачивание обложек отключено (выбрано "Без обложек")');
-      }
       return { downloaded: 0, failed: 0, total: 0 };
     }
 

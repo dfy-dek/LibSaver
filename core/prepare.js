@@ -935,7 +935,7 @@ function addLogToContainer(message, isError = false, color = null) {
   if (autoScrollLogs) {
     const logsPanel = document.getElementById('logs-panel');
     if (logsPanel) {
-      logsPanel.scrollTop = logsPanel.scrollHeight;
+      logsPanel.scrollTop = logsPanel.scrollHeight
     }
   }
 }
@@ -1035,11 +1035,18 @@ function disableChapterCheckboxes() {
   chapterCheckboxes.forEach(checkbox => {
     checkbox.disabled = true;
   });
+}
 
-  // Отключаем чекбоксы томов
+function disableVolumeCheckboxes() {
   const volumeCheckboxes = document.querySelectorAll('.volume-checkbox');
   volumeCheckboxes.forEach(checkbox => {
     checkbox.disabled = true;
+    checkbox.style.cursor = 'default';
+    // Добавляем класс disabled к родительскому checkbox-group
+    const checkboxGroup = checkbox.closest('.checkbox-group');
+    if (checkboxGroup) {
+      checkboxGroup.classList.add('checkbox-group-disabled');
+    }
   });
 }
 
@@ -1050,9 +1057,11 @@ function disableControls() {
   if (formatSelect) {
     formatSelect.style.pointerEvents = 'none';
     formatSelect.style.opacity = '0.5';
+    formatSelect.style.cursor = 'default';
   }
   if (formatDropdown) {
     formatDropdown.style.pointerEvents = 'none';
+    formatDropdown.style.cursor = 'default';
   }
 
   // Отключаем селектор сервера
@@ -1061,15 +1070,18 @@ function disableControls() {
   if (serverSelect) {
     serverSelect.style.pointerEvents = 'none';
     serverSelect.style.opacity = '0.5';
+    serverSelect.style.cursor = 'default';
   }
   if (serverDropdown) {
     serverDropdown.style.pointerEvents = 'none';
+    serverDropdown.style.cursor = 'default';
   }
 
   // Отключаем чекбокс "Только текст"
   const textOnlyCheckbox = document.getElementById('text-only-checkbox');
   if (textOnlyCheckbox) {
     textOnlyCheckbox.disabled = true;
+    textOnlyCheckbox.style.cursor = 'default';
   }
 }
 
@@ -1080,9 +1092,11 @@ function enableControls() {
   if (formatSelect) {
     formatSelect.style.pointerEvents = 'auto';
     formatSelect.style.opacity = '1';
+    formatSelect.style.cursor = 'pointer';
   }
   if (formatDropdown) {
     formatDropdown.style.pointerEvents = 'auto';
+    formatDropdown.style.cursor = 'pointer';
   }
 
   // Включаем селектор сервера
@@ -1091,16 +1105,32 @@ function enableControls() {
   if (serverSelect) {
     serverSelect.style.pointerEvents = 'auto';
     serverSelect.style.opacity = '1';
+    serverSelect.style.cursor = 'pointer';
   }
   if (serverDropdown) {
     serverDropdown.style.pointerEvents = 'auto';
+    serverDropdown.style.cursor = 'pointer';
   }
 
   // Включаем чекбокс "Только текст"
   const textOnlyCheckbox = document.getElementById('text-only-checkbox');
   if (textOnlyCheckbox) {
     textOnlyCheckbox.disabled = false;
+    textOnlyCheckbox.style.cursor = 'pointer';
   }
+}
+
+function enableVolumeCheckboxes() {
+  const volumeCheckboxes = document.querySelectorAll('.volume-checkbox');
+  volumeCheckboxes.forEach(checkbox => {
+    checkbox.disabled = false;
+    checkbox.style.cursor = 'pointer';
+    // Удаляем класс disabled из родительского checkbox-group
+    const checkboxGroup = checkbox.closest('.checkbox-group');
+    if (checkboxGroup) {
+      checkboxGroup.classList.remove('checkbox-group-disabled');
+    }
+  });
 }
 
 // Экспортируем функции для использования в download.js
@@ -1372,18 +1402,18 @@ function setupEventListeners() {
     const serverDropdown = document.getElementById('server-dropdown');
     const serverOptions = document.querySelectorAll('.server-option');
     
-    let selectedServer = 'normal'; // default
+    let selectedServer = 'compressed'; // default
     
     // Загружаем сохраненный сервер
     chrome.storage.local.get(['imageServer'], (result) => {
       if (result.imageServer) {
         selectedServer = result.imageServer;
-        const option = document.querySelector(`.server-option[data-value="${selectedServer}"]`);
-        if (option) {
-          serverSelect.textContent = option.textContent;
-          document.querySelectorAll('.server-option').forEach(opt => opt.classList.remove('selected'));
-          option.classList.add('selected');
-        }
+      }
+      const option = document.querySelector(`.server-option[data-value="${selectedServer}"]`);
+      if (option) {
+        serverSelect.textContent = option.textContent;
+        document.querySelectorAll('.server-option').forEach(opt => opt.classList.remove('selected'));
+        option.classList.add('selected');
       }
     });
     
@@ -1654,16 +1684,17 @@ function updateSelectedChapters() {
   }
 }
 
+// Локальная функция toast для prepare (простая, без иконок)
 function showToast(message, type = 'info') {
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
   toast.textContent = message;
   document.body.appendChild(toast);
-  
+
   setTimeout(() => {
     toast.classList.add('show');
   }, 10);
-  
+
   setTimeout(() => {
     toast.classList.remove('show');
     setTimeout(() => toast.remove(), 300);

@@ -58,40 +58,64 @@ class PdfFormatter extends BaseFormatter {
       const fontName = this.options.settings?.pdfFont || 'dejavu-sans';
       const fontPaths = {
         'dejavu-sans': {
-          regular: 'fonts/DejaVu Sans/DejaVuSans.ttf',
-          bold: 'fonts/DejaVu Sans/DejaVuSans-Bold.ttf',
-          italic: 'fonts/DejaVu Sans/DejaVuSans-Oblique.ttf',
-          bolditalic: 'fonts/DejaVu Sans/DejaVuSans-BoldOblique.ttf'
+          regular: 'assets/fonts/DejaVuSans.ttf',
+          bold: 'assets/fonts/DejaVuSans-Bold.ttf',
+          italic: 'assets/fonts/DejaVuSans-Oblique.ttf',
+          bolditalic: 'assets/fonts/DejaVuSans-BoldOblique.ttf'
         },
         'inter': {
-          regular: 'fonts/Inter/Inter-Regular.ttf',
-          bold: 'fonts/Inter/Inter-Bold.ttf',
-          italic: 'fonts/Inter/Inter-Italic.ttf',
-          bolditalic: 'fonts/Inter/Inter-BoldItalic.ttf'
+          regular: 'assets/fonts/Inter-Regular.ttf',
+          bold: 'assets/fonts/Inter-Bold.ttf',
+          italic: 'assets/fonts/Inter-Italic.ttf',
+          bolditalic: 'assets/fonts/Inter-BoldItalic.ttf'
         },
         'merriweather': {
-          regular: 'fonts/Merriweather/Merriweather-Regular.ttf',
-          bold: 'fonts/Merriweather/Merriweather-Bold.ttf',
-          italic: 'fonts/Merriweather/Merriweather-Italic.ttf',
-          bolditalic: 'fonts/Merriweather/Merriweather-BoldItalic.ttf'
+          regular: 'assets/fonts/Merriweather-Regular.ttf',
+          bold: 'assets/fonts/Merriweather-Bold.ttf',
+          italic: 'assets/fonts/Merriweather-Italic.ttf',
+          bolditalic: 'assets/fonts/Merriweather-BoldItalic.ttf'
         },
         'montserrat': {
-          regular: 'fonts/Montserrat/Montserrat-Regular.ttf',
-          bold: 'fonts/Montserrat/Montserrat-Bold.ttf',
-          italic: 'fonts/Montserrat/Montserrat-Italic.ttf',
-          bolditalic: 'fonts/Montserrat/Montserrat-BoldItalic.ttf'
+          regular: 'assets/fonts/Montserrat-Regular.ttf',
+          bold: 'assets/fonts/Montserrat-Bold.ttf',
+          italic: 'assets/fonts/Montserrat-Italic.ttf',
+          bolditalic: 'assets/fonts/Montserrat-BoldItalic.ttf'
         },
         'open-sans': {
-          regular: 'fonts/Open_Sans/OpenSans-Regular.ttf',
-          bold: 'fonts/Open_Sans/OpenSans-Bold.ttf',
-          italic: 'fonts/Open_Sans/OpenSans-Italic.ttf',
-          bolditalic: 'fonts/Open_Sans/OpenSans-BoldItalic.ttf'
+          regular: 'assets/fonts/OpenSans-Regular.ttf',
+          bold: 'assets/fonts/OpenSans-Bold.ttf',
+          italic: 'assets/fonts/OpenSans-Italic.ttf',
+          bolditalic: 'assets/fonts/OpenSans-BoldItalic.ttf'
         },
         'roboto': {
-          regular: 'fonts/Roboto/Roboto-Regular.ttf',
-          bold: 'fonts/Roboto/Roboto-Bold.ttf',
-          italic: 'fonts/Roboto/Roboto-Italic.ttf',
-          bolditalic: 'fonts/Roboto/Roboto-BoldItalic.ttf'
+          regular: 'assets/fonts/Roboto-Regular.ttf',
+          bold: 'assets/fonts/Roboto-Bold.ttf',
+          italic: 'assets/fonts/Roboto-Italic.ttf',
+          bolditalic: 'assets/fonts/Roboto-BoldItalic.ttf'
+        },
+        'playfair-display': {
+          regular: 'assets/fonts/PlayfairDisplay-Regular.ttf',
+          bold: 'assets/fonts/PlayfairDisplay-Bold.ttf',
+          italic: 'assets/fonts/PlayfairDisplay-Italic.ttf',
+          bolditalic: 'assets/fonts/PlayfairDisplay-BoldItalic.ttf'
+        },
+        'noto-serif': {
+          regular: 'assets/fonts/NotoSerif-Regular.ttf',
+          bold: 'assets/fonts/NotoSerif-Bold.ttf',
+          italic: 'assets/fonts/NotoSerif-Italic.ttf',
+          bolditalic: 'assets/fonts/NotoSerif-BoldItalic.ttf'
+        },
+        'lora': {
+          regular: 'assets/fonts/Lora-Regular.ttf',
+          bold: 'assets/fonts/Lora-Bold.ttf',
+          italic: 'assets/fonts/Lora-Italic.ttf',
+          bolditalic: 'assets/fonts/Lora-BoldItalic.ttf'
+        },
+        'crimson-text': {
+          regular: 'assets/fonts/CrimsonText-Regular.ttf',
+          bold: 'assets/fonts/CrimsonText-Bold.ttf',
+          italic: 'assets/fonts/CrimsonText-Italic.ttf',
+          bolditalic: 'assets/fonts/CrimsonText-BoldItalic.ttf'
         }
       };
 
@@ -170,7 +194,6 @@ class PdfFormatter extends BaseFormatter {
     const coverQuality = this.options.coverQuality || 'ORIGINAL';
 
     if (coverQuality === 'NONE') {
-      addLog('Скачивание обложек отключено (выбрано "Без обложек")');
       return { downloaded: 0, failed: 0, total: 0 };
     }
 
@@ -294,6 +317,12 @@ class PdfFormatter extends BaseFormatter {
     const imageServer = this.options.imageServer || 'normal';
     const chapterBranchOverrides = this.options.chapterBranchOverrides || {};
     const translatorPriority = this.options.translatorPriority || [];
+    const imageQuality = this.options.quality || 'ORIGINAL';
+
+    // Если выбрано "Без картинок", пропускаем мангу
+    if (imageQuality === 'NONE') {
+      return;
+    }
 
     // Счётчик картинок для манги
     this.imagesDownloaded = 0;
@@ -865,7 +894,9 @@ class PdfFormatter extends BaseFormatter {
         const doc = parser.parseFromString(`<div>${node}</div>`, 'text/html');
         const images = doc.querySelectorAll('img');
         for (const img of images) {
-          img.outerHTML = '<span class="image-placeholder">[Изображение пропущено]</span>';
+          const alt = img.alt || '';
+          const placeholder = alt ? `<span class="image-placeholder">[Изображение пропущено: ${alt}]</span>` : '<span class="image-placeholder">[Изображение пропущено]</span>';
+          img.outerHTML = placeholder;
         }
         return doc.body.innerHTML;
       }
@@ -948,13 +979,15 @@ class PdfFormatter extends BaseFormatter {
     }
 
     if (node.type === 'image') {
+      const caption = node.attrs?.description || '';
+      const captionHtml = caption ? `<p class="image-caption">${caption}</p>` : '';
+
       if (this.options.quality === 'NONE') {
-        return '<span class="image-placeholder">[Картинка]</span>';
+        return `${captionHtml}<span class="image-placeholder">[Картинка пропущена]</span>`;
       }
 
       const imagesData = node.attrs?.images;
-      let caption = node.attrs?.description || '';
-      caption = caption.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      let captionEscaped = caption.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
       // Проверяем, есть ли массив изображений (группа картинок)
       if (Array.isArray(imagesData) && imagesData.length > 0) {
@@ -1035,7 +1068,7 @@ class PdfFormatter extends BaseFormatter {
 
         // Оборачиваем все картинки в div с подписью
         const captionHtml = caption ? `<p class="image-caption">${caption}</p>` : '';
-        return `<div class="image-group">${captionHtml}${imagesHtml}</div>`;
+        return `<div class="image-group">${imagesHtml}${captionHtml}</div>`;
       }
 
       // Обычная логика для одиночных картинок
@@ -1057,13 +1090,13 @@ class PdfFormatter extends BaseFormatter {
               reader.onloadend = () => r(reader.result);
               reader.readAsDataURL(blob);
             });
-            const captionHtml = caption ? `<p class="image-caption">${caption}</p>` : '';
             onImageDownloaded();
             this.imagesDownloaded++;
           if (window.incrementTotalImages) {
             window.incrementTotalImages();
           }
-            return `${captionHtml}<img src="${base64}" alt="${caption || 'Иллюстрация'}" />`;
+            const captionHtml = caption ? `<p class="image-caption">${caption}</p>` : '';
+            return `<img src="${base64}" alt="${caption || 'Иллюстрация'}" />${captionHtml}`;
           } catch (e) {
             if (this.options.addLog) {
               this.options.addLog(`Error loading UUID image ${fullUrl}: ${e.message}`, true);
@@ -1088,13 +1121,13 @@ class PdfFormatter extends BaseFormatter {
             reader.onloadend = () => r(reader.result);
             reader.readAsDataURL(blob);
           });
-          const captionHtml = caption ? `<p class="image-caption">${caption}</p>` : '';
           onImageDownloaded();
           this.imagesDownloaded++;
           if (window.incrementTotalImages) {
             window.incrementTotalImages();
           }
-          return `${captionHtml}<img src="${base64}" alt="${caption || 'Иллюстрация'}" />`;
+          const captionHtml = caption ? `<p class="image-caption">${caption}</p>` : '';
+          return `<img src="${base64}" alt="${caption || 'Иллюстрация'}" />${captionHtml}`;
         } catch (e) {
           if (this.options.addLog) {
             this.options.addLog(`Error loading image ${imgUrl}: ${e.message}`, true);

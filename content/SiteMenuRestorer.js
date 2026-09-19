@@ -123,7 +123,7 @@
             }
             
             try {
-                const svgUrl = chrome.runtime.getURL(`svg/${svgFile}`);
+                const svgUrl = chrome.runtime.getURL(`assets/svg/${svgFile}`);
                 const response = await fetch(svgUrl);
                 if (!response.ok) {
                     console.error(`Ошибка загрузки SVG ${svgFile}:`, response.statusText);
