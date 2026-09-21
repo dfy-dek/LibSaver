@@ -9,7 +9,6 @@ function formatChapterTitle(vol, num, name, tocFormat, customTocFormat, hideChap
   const numStr = num || '1';
   const nameStr = name || '';
 
-  // Пользовательский формат - галочки не работают
   if (tocFormat === 'custom') {
     if (customTocFormat) {
       return customTocFormat

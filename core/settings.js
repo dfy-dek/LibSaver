@@ -101,7 +101,7 @@ function applySettingsToUI(settings, metadataFields) {
 
   // TOC format settings
   document.getElementById('toc-format').value = settings.tocFormat || 'default';
-  document.getElementById('custom-toc-format').value = settings.customTocFormat || '';
+  document.getElementById('custom-toc-format').value = settings.customTocFormat || 'Том {vol} Глава {num} {name}';
   document.getElementById('hide-chapter-name').checked = settings.hideChapterName || false;
   document.getElementById('hide-volume-number').checked = settings.hideVolumeNumber || false;
 
@@ -590,7 +590,7 @@ const DEFAULT_SETTINGS_BY_GROUP = {
   toc: {
     'disable-toc': false,
     'toc-format': 'default',
-    'custom-toc-format': '',
+    'custom-toc-format': 'Том {vol} Глава {num} {name}',
     'hide-chapter-name': false,
     'hide-volume-number': false
   },

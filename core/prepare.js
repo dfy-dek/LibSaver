@@ -400,6 +400,7 @@ function renderBookInfo() {
         
         const fieldValue = document.createElement('div');
         fieldValue.className = 'field-value';
+        fieldValue.dataset.field = field.settingKey;
         fieldValue.textContent = value;
         
         fieldDiv.appendChild(fieldHeader);

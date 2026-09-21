@@ -361,9 +361,30 @@ body {
   color: var(--text-primary);
   font-size: var(--font-size-md);
   min-height: 28px;
-  display: flex;
-  align-items: center;
+  display: block;
   margin-bottom: var(--spacing-md);
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+/* Скрытый скроллбар для одинаковой высоты полей */
+.field-value::-webkit-scrollbar {
+  display: none;
+}
+
+/* Многострочные поля сохраняют форматирование */
+.field-value[data-field="description"],
+.field-value[data-field="genres"],
+.field-value[data-field="tags"] {
+  white-space: pre-wrap;
+  overflow-x: hidden;
+}
+
+/* ALT поле - каждая строка отдельное значение, без переноса слов */
+.field-value[data-field="title-alt"] {
+  white-space: pre;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .covers-gallery {
