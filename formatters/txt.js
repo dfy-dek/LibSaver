@@ -708,14 +708,17 @@ class TxtFormatter extends BaseFormatter {
       'description': { label: fieldLabels['description'] || defaultFieldLabels['description'], value: metadata.description }
     };
 
+    const fieldOrder = this.options.metadataFieldOrder || Object.keys(fieldMapping);
+
     let infoContent = '='.repeat(50) + '\n';
     infoContent += 'ИНФОРМАЦИЯ О ПРОИЗВЕДЕНИИ\n';
     infoContent += '='.repeat(50) + '\n\n';
 
-    for (const [key, config] of Object.entries(fieldMapping)) {
-      if (config.value) {
-        const formattedValue = config.format ? config.format(config.value) : config.value;
-        infoContent += `${config.label}: ${formattedValue}\n`;
+    for (const fieldId of fieldOrder) {
+      const field = fieldMapping[fieldId];
+      if (field && field.value) {
+        const formattedValue = field.format ? field.format(field.value) : field.value;
+        infoContent += `${field.label}: ${formattedValue}\n`;
       }
     }
 

@@ -483,7 +483,7 @@ function renderCovers() {
     loadingIcon.style.width = '100%';
     loadingIcon.style.height = '100%';
     loadingIcon.style.borderRadius = '3px';
-    loadingIcon.style.backgroundColor = 'rgba(10, 10, 10, 0.95)';
+    loadingIcon.style.backgroundColor = 'var(--bg-tertiary)';
     imgWrapper.appendChild(loadingIcon);
     
     const imgContainer = document.createElement('div');
@@ -510,8 +510,7 @@ function renderCovers() {
         img.classList.add('loaded');
         img.style.display = 'block';
         imgWrapper.classList.add('has-image');
-        const isDark = !document.documentElement.hasAttribute('data-theme');
-        thumbnail.style.backgroundColor = isDark ? '#1c1c1c' : '#ffffff';
+        thumbnail.style.backgroundColor = 'var(--bg-tertiary)';
       };
       img.onerror = () => {
         console.error('[prepare.js] Failed to load data URL image:', coverUrl.substring(0, 50) + '...');
@@ -525,8 +524,7 @@ function renderCovers() {
         errorIcon.style.width = '100%';
         errorIcon.style.height = '100%';
         errorIcon.style.borderRadius = '3px';
-        const isDark = !document.documentElement.hasAttribute('data-theme');
-        errorIcon.style.backgroundColor = isDark ? 'rgba(10, 10, 10, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+        errorIcon.style.backgroundColor = 'var(--bg-tertiary)';
         imgWrapper.appendChild(errorIcon);
         thumbnail.classList.add('error');
       };
@@ -545,8 +543,7 @@ function renderCovers() {
             img.classList.add('loaded');
             img.style.display = 'block';
             imgWrapper.classList.add('has-image');
-            const isDark = !document.documentElement.hasAttribute('data-theme');
-            thumbnail.style.backgroundColor = isDark ? '#1c1c1c' : '#ffffff';
+            thumbnail.style.backgroundColor = 'var(--bg-tertiary)';
           };
           setupTippyPreview(thumbnail, coverUrl);
           thumbnail.onclick = () => openCoverInNewWindow(coverUrl, coverType);
@@ -562,8 +559,7 @@ function renderCovers() {
           errorIcon.style.width = '100%';
           errorIcon.style.height = '100%';
           errorIcon.style.borderRadius = '3px';
-          const isDark = !document.documentElement.hasAttribute('data-theme');
-        errorIcon.style.backgroundColor = isDark ? 'rgba(10, 10, 10, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+        errorIcon.style.backgroundColor = 'var(--bg-tertiary)';
           imgWrapper.appendChild(errorIcon);
           thumbnail.classList.add('error');
         }
@@ -579,8 +575,7 @@ function renderCovers() {
         errorIcon.style.width = '100%';
         errorIcon.style.height = '100%';
         errorIcon.style.borderRadius = '3px';
-        const isDark = !document.documentElement.hasAttribute('data-theme');
-        errorIcon.style.backgroundColor = isDark ? 'rgba(10, 10, 10, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+        errorIcon.style.backgroundColor = 'var(--bg-tertiary)';
         imgWrapper.appendChild(errorIcon);
         thumbnail.classList.add('error');
       });
@@ -597,7 +592,7 @@ function renderCovers() {
       errorIcon.style.width = '100%';
       errorIcon.style.height = '100%';
       errorIcon.style.borderRadius = '3px';
-      errorIcon.style.backgroundColor = 'rgba(10, 10, 10, 0.95)';
+      errorIcon.style.backgroundColor = 'var(--bg-tertiary)';
       imgWrapper.appendChild(errorIcon);
       thumbnail.classList.add('error');
     }

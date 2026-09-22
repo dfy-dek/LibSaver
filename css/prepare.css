@@ -439,6 +439,7 @@ body {
   max-height: 72px;
   border-radius: 3px;
   overflow: hidden;
+  background-color: var(--bg-tertiary);
 }
 
 .cover-thumbnail .img-wrapper .img-container img {

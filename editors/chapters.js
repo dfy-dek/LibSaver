@@ -645,7 +645,7 @@ function updatePriorityList(listElement) {
     const upBtn = document.createElement('button');
     upBtn.className = 'translator-priority-btn translator-priority-up';
     upBtn.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
-    upBtn.title = 'Переместить вверх';
+    upBtn.title = 'Увеличить приоритет';
     upBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       moveTranslatorUp(listElement, item);
@@ -654,7 +654,7 @@ function updatePriorityList(listElement) {
     const downBtn = document.createElement('button');
     downBtn.className = 'translator-priority-btn translator-priority-down';
     downBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
-    downBtn.title = 'Переместить вниз';
+    downBtn.title = 'Уменьшить приоритет';
     downBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       moveTranslatorDown(listElement, item);
@@ -692,15 +692,43 @@ function moveTranslatorDown(listElement, item) {
 
 function updateButtonStates(listElement) {
   const items = listElement.querySelectorAll('.translator-priority-item');
+  const itemsCount = items.length;
+  
   items.forEach((item, index) => {
     const upBtn = item.querySelector('.translator-priority-up');
     const downBtn = item.querySelector('.translator-priority-down');
     
+    // Если всего один перевод - скрываем кнопки полностью (display: none)
+    // Если больше одного переводов - скрываем только визуально (visibility: hidden)
+    const useDisplayNone = itemsCount === 1;
+    
     if (upBtn) {
-      upBtn.disabled = index === 0;
+      if (index === 0) {
+        if (useDisplayNone) {
+          upBtn.style.display = 'none';
+        } else {
+          upBtn.style.visibility = 'hidden';
+          upBtn.style.cursor = 'default';
+        }
+      } else {
+        upBtn.style.display = 'flex';
+        upBtn.style.visibility = 'visible';
+        upBtn.style.cursor = 'pointer';
+      }
     }
     if (downBtn) {
-      downBtn.disabled = index === items.length - 1;
+      if (index === itemsCount - 1) {
+        if (useDisplayNone) {
+          downBtn.style.display = 'none';
+        } else {
+          downBtn.style.visibility = 'hidden';
+          downBtn.style.cursor = 'default';
+        }
+      } else {
+        downBtn.style.display = 'flex';
+        downBtn.style.visibility = 'visible';
+        downBtn.style.cursor = 'pointer';
+      }
     }
   });
 }

@@ -8,7 +8,17 @@ let tooltipContents = [];
 
 // Функция для обновления темы в tippy (локальная обёртка)
 function updateTippyTheme() {
-  updateTippyThemeShared(tooltipContents, tippyInstances);
+  const isDark = !document.documentElement.hasAttribute('data-theme');
+
+  // Обновляем backgroundColor всех tooltipContent
+  tooltipContents.forEach(tooltipContent => {
+    tooltipContent.style.backgroundColor = isDark ? 'rgba(10, 10, 10, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+  });
+
+  // Обновляем theme всех tippy экземпляров
+  tippyInstances.forEach(instance => {
+    instance.setProps({ theme: isDark ? 'dark' : 'light' });
+  });
 }
 
 // Слушатель сообщений для обновления темы
@@ -275,8 +285,7 @@ function createLoadingIcon() {
   loadingIcon.style.width = '100%';
   loadingIcon.style.height = '100%';
   loadingIcon.style.borderRadius = '3px';
-  const isDark = !document.documentElement.hasAttribute('data-theme');
-  loadingIcon.style.backgroundColor = isDark ? 'rgba(10, 10, 10, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+  loadingIcon.style.backgroundColor = 'var(--bg-tertiary)';
   return loadingIcon;
 }
 
@@ -290,8 +299,7 @@ function createErrorIcon() {
   errorIcon.style.width = '100%';
   errorIcon.style.height = '100%';
   errorIcon.style.borderRadius = '3px';
-  const isDark = !document.documentElement.hasAttribute('data-theme');
-  errorIcon.style.backgroundColor = isDark ? 'rgba(10, 10, 10, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+  errorIcon.style.backgroundColor = 'var(--bg-tertiary)';
   return errorIcon;
 }
 
@@ -313,8 +321,7 @@ function preventDrag(element) {
 
 // Вспомогательная функция для настройки фона превью
 function setPreviewBackground(preview, isLoaded) {
-  const isDark = !document.documentElement.hasAttribute('data-theme');
-  preview.style.backgroundColor = isLoaded ? (isDark ? '#1c1c1c' : '#ffffff') : (isDark ? 'rgba(10, 10, 10, 0.95)' : 'rgba(255, 255, 255, 0.95)');
+  preview.style.backgroundColor = 'var(--bg-tertiary)';
   preview.style.borderRadius = '3px';
 }
 

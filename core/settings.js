@@ -8,6 +8,15 @@ async function saveTheme(theme) {
   localStorage.setItem('theme', theme);
   // Отправляем сообщение всем открытым окнам для обновления темы
   chrome.runtime.sendMessage({ action: 'updateTheme', theme });
+
+  // Обновляем акцентный цвет для текущего окна сразу после смены темы
+  chrome.storage.local.get(['sourceUrl', 'accentColor'], (result) => {
+    if (result.accentColor && result.accentColor !== 'auto') {
+      window.applyUserAccent(result.accentColor);
+    } else if (result.sourceUrl) {
+      window.applySiteAccent(result.sourceUrl);
+    }
+  });
 }
 
 // Функция применения выбранного пользователем акцентного цвета

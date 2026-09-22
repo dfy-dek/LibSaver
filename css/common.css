@@ -1,5 +1,10 @@
 /* Общие стили для всех страниц расширения */
 
+.no-transition,
+.no-transition * {
+  transition: none !important;
+}
+
 :root {
   /* Тёмная тема (по умолчанию) */
   --bg-primary: #0a0a0a;

@@ -126,6 +126,7 @@ label.editing {
   cursor: text;
   user-select: text;
   outline: none;
+  text-transform: none;
 }
 
 .field.disabled {

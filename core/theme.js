@@ -2,6 +2,9 @@
 
 // Функция применения темы
 function applyTheme(theme) {
+  // Отключаем анимации при смене темы
+  document.body.classList.add('no-transition');
+
   if (theme === 'light') {
     document.documentElement.setAttribute('data-theme', 'light');
   } else if (theme === 'system') {
@@ -14,6 +17,11 @@ function applyTheme(theme) {
   } else {
     document.documentElement.removeAttribute('data-theme');
   }
+
+  // Включаем анимации после смены темы
+  setTimeout(() => {
+    document.body.classList.remove('no-transition');
+  }, 10);
 }
 
 // Функция загрузки и применения темы
@@ -45,6 +53,9 @@ function applyUserAccent(accent) {
 
   const color = colors[accent];
   if (color) {
+    // Отключаем анимации при смене цвета
+    document.body.classList.add('no-transition');
+
     if (isDark) {
       root.style.setProperty('--accent-color', color.dark);
       root.style.setProperty('--accent-hover', color.hoverDark);
@@ -56,6 +67,11 @@ function applyUserAccent(accent) {
       root.style.setProperty('--accent-soft', `${color.light}33`);
       root.style.setProperty('--checkbox-color', color.light);
     }
+
+    // Включаем анимации после смены цвета
+    setTimeout(() => {
+      document.body.classList.remove('no-transition');
+    }, 10);
   }
 }
 
@@ -85,6 +101,9 @@ function applySiteAccent(url) {
                            url.includes('shlib.life') ||
                            url.includes('animelib.org') ||
                            url.includes('anilib.me');
+
+    // Отключаем анимации при смене цвета
+    document.body.classList.add('no-transition');
 
     if (isSupportedSite) {
       // Для поддерживаемых сайтов используем прямые значения цветов
@@ -163,6 +182,11 @@ function applySiteAccent(url) {
         root.style.setProperty('--checkbox-color', '#526cfe');
       }
     }
+
+    // Включаем анимации после смены цвета
+    setTimeout(() => {
+      document.body.classList.remove('no-transition');
+    }, 10);
   });
 }
 

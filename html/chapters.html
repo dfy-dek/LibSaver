@@ -180,15 +180,18 @@
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       border-radius: var(--border-radius);
-      cursor: pointer;
+      cursor: default;
       transition: all 0.2s;
+    }
+    .translator-priority-item:active {
+      cursor: default;
     }
     .translator-priority-item:hover {
       background: rgba(255, 255, 255, 0.05);
       border-color: rgba(255, 255, 255, 0.1);
     }
     .translator-priority-item:active {
-      cursor: pointer;
+      cursor: default;
     }
     .translator-priority-name {
       flex: 1;
@@ -198,10 +201,12 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      cursor: default;
     }
     .translator-priority-count {
       font-size: 11px;
       color: var(--text-secondary);
+      cursor: default;
       background: var(--bg-tertiary);
       padding: var(--spacing-xs) var(--spacing-sm);
       border-radius: var(--border-radius);
@@ -237,12 +242,11 @@
     }
     .translator-priority-btn:disabled {
       opacity: 0.2;
-      cursor: not-allowed;
+      cursor: default;
     }
     .translator-priority-btn:disabled:hover {
-      opacity: 0.2;
-      background: none;
-      color: var(--text-secondary);
+      opacity: 0.2 !important;
+      color: var(--text-secondary) !important;
     }
   </style>
 </head>
