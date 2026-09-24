@@ -208,6 +208,11 @@ body {
 .loader-text {
   margin-bottom: var(--spacing-sm);
   transition: opacity 0.1s ease;
+  height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 20px;
 }
 
 .progress-bar-container {
