@@ -540,6 +540,11 @@ function loadMoreChapters() {
   const startIndex = currentPage * pageSize;
   
   renderChaptersList(uniqueChapters, uniqueOriginalChapters, startIndex, true);
+  
+  // Переключаем кнопку скролла на "вниз"
+  if (typeof switchScrollButtonToDown === 'function') {
+    switchScrollButtonToDown();
+  }
 }
 
 function loadAllChapters() {
@@ -552,6 +557,11 @@ function loadAllChapters() {
   const startIndex = totalChaptersRendered;
   
   renderChaptersList(uniqueChapters, uniqueOriginalChapters, startIndex, true, true);
+  
+  // Переключаем кнопку скролла на "вниз"
+  if (typeof switchScrollButtonToDown === 'function') {
+    switchScrollButtonToDown();
+  }
 }
 
 function saveCurrentPageChanges() {

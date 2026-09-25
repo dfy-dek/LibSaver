@@ -1,5 +1,11 @@
 // Универсальные кнопки прокрутки для всех страниц редакторов
 
+// Глобальные переменные для доступа из других файлов
+let currentDirection = null;
+let rotation = 0;
+let scrollTimeout = null;
+let edgeTimeout = null;
+
 function setupScrollButtons() {
   const scrollButtons = document.getElementById('scroll-buttons');
   const scrollBtn = document.getElementById('scroll-btn');
@@ -8,10 +14,6 @@ function setupScrollButtons() {
   if (!scrollButtons || !scrollBtn || !scrollIcon) return;
 
   let lastScrollTop = 0;
-  let scrollTimeout = null;
-  let edgeTimeout = null; // Отдельный таймер для краёв
-  let currentDirection = null; // 'up' или 'down'
-  let rotation = 0; // Текущий угол вращения
 
   // Скрываем кнопку через 4 секунды после остановки прокрутки
   const hideButton = () => {
@@ -28,6 +30,9 @@ function setupScrollButtons() {
       }, 150);
     }, 4000);
   };
+
+  // Делаем hideButton доступной глобально
+  window.hideScrollButton = hideButton;
 
   // Скрываем кнопку через 2 секунды если у края
   const hideButtonFromEdge = () => {
@@ -150,6 +155,42 @@ function setupScrollButtons() {
       });
     }
   });
+}
+
+// Функция для переключения кнопки на "вниз" (вызывается из chapters.js)
+function switchScrollButtonToDown() {
+  const scrollButtons = document.getElementById('scroll-buttons');
+  const scrollBtn = document.getElementById('scroll-btn');
+  const scrollIcon = scrollBtn?.querySelector('i');
+
+  if (!scrollButtons || !scrollBtn || !scrollIcon) return;
+
+  // Переключаем на "вниз"
+  if (currentDirection !== 'down') {
+    rotation += 180;
+    scrollIcon.style.transform = `rotate(${rotation}deg)`;
+    scrollBtn.title = 'Вниз';
+    currentDirection = 'down';
+  }
+
+  // Показываем кнопку если она скрыта
+  scrollButtons.style.display = 'block';
+  setTimeout(() => scrollButtons.style.opacity = '1', 10);
+  scrollBtn.style.visibility = 'visible';
+  setTimeout(() => scrollBtn.style.opacity = '1', 10);
+
+  // Сбрасываем таймеры скрытия
+  if (scrollTimeout) {
+    clearTimeout(scrollTimeout);
+  }
+  if (edgeTimeout) {
+    clearTimeout(edgeTimeout);
+  }
+
+  // Запускаем таймер скрытия на 4000ms (как в середине страницы)
+  if (typeof window.hideScrollButton === 'function') {
+    window.hideScrollButton();
+  }
 }
 
 // Инициализация при загрузке DOM
