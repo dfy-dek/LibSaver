@@ -18,7 +18,6 @@
     loader.innerHTML = '<div class="skeleton-toolbar"></div>';
     document.documentElement.appendChild(loader);
 
-    // Задержка 240ms для загрузки данных
     setTimeout(() => {
       document.body.style.opacity = '1';
       loader.remove();

@@ -6,6 +6,11 @@ let currentSlug = null;
 let wasSaved = false;
 let translatorPriority = [];
 
+// Переменные пагинации
+let currentPage = 0;
+let pageSize = 500;
+let totalChaptersRendered = 0;
+
 // Слушатель сообщений для обновления темы
 setupThemeMessageListener();
 
@@ -292,15 +297,24 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   }
 });
 
-function renderChaptersList(chapters, originalChapters) {
+function renderChaptersList(chapters, originalChapters, startIndex = 0, append = false, loadAll = false) {
   const container = document.getElementById('chapters-list');
-  container.innerHTML = '';
   
-  chapters.forEach((ch, i) => {
-    const originalCh = originalChapters[i] || ch;
+  if (!append) {
+    container.innerHTML = '';
+    currentPage = 0;
+    totalChaptersRendered = 0;
+  }
+  
+  const endIndex = loadAll ? chapters.length : Math.min(startIndex + pageSize, chapters.length);
+  const chaptersToRender = chapters.slice(startIndex, endIndex);
+  
+  chaptersToRender.forEach((ch, i) => {
+    const globalIndex = startIndex + i;
+    const originalCh = originalChapters[globalIndex] || ch;
     const div = document.createElement('div');
     div.className = 'chapter-item';
-    div.dataset.index = i;
+    div.dataset.index = globalIndex;
     
     const header = document.createElement('div');
     header.className = 'chapter-header';
@@ -314,7 +328,7 @@ function renderChaptersList(chapters, originalChapters) {
     const resetBtn = document.createElement('button');
     resetBtn.className = 'chapter-reset-btn';
     resetBtn.innerHTML = '<i class="fa-solid fa-rotate-left"></i>';
-    resetBtn.dataset.index = i;
+    resetBtn.dataset.index = globalIndex;
     
     header.appendChild(resetBtn);
     div.appendChild(header);
@@ -328,7 +342,7 @@ function renderChaptersList(chapters, originalChapters) {
     const defaultValue = formatChapterTitle(originalCh.volume, originalCh.number, originalCh.name, tocFormat, customTocFormat, hideChapterName, hideVolumeNumber);
     input.dataset.default = defaultValue;
     input.value = ch.displayTitle || defaultValue;
-    input.dataset.index = i;
+    input.dataset.index = globalIndex;
     
     inputWrapper.appendChild(input);
     
@@ -336,7 +350,6 @@ function renderChaptersList(chapters, originalChapters) {
     let currentTranslatorKey = chapterBranchOverrides[ch.id];
     let currentTranslator = '';
     
-    // Если нет индивидуального выбора, используем приоритет переводчиков
     if (!currentTranslatorKey && translatorPriority.length > 0) {
       for (const priorityKey of translatorPriority) {
         if (variants.has(priorityKey)) {
@@ -346,7 +359,6 @@ function renderChaptersList(chapters, originalChapters) {
       }
     }
     
-    // Если всё ещё нет выбора, используем первый из branches
     if (!currentTranslatorKey && ch.branches && ch.branches[0]) {
       currentTranslatorKey = getTranslatorKey(ch.branches[0]);
     }
@@ -393,7 +405,6 @@ function renderChaptersList(chapters, originalChapters) {
       inputWrapper.appendChild(dropdown);
       inputWrapper.appendChild(translatorSelect);
       
-      // ResizeObserver для динамического расчёта padding
       const resizeObserver = new ResizeObserver(() => {
         const translatorWidth = translatorSelect.offsetWidth;
         input.style.paddingRight = (translatorWidth + 12) + 'px';
@@ -425,8 +436,11 @@ function renderChaptersList(chapters, originalChapters) {
     container.appendChild(div);
   });
   
+  totalChaptersRendered = endIndex;
   updateEditorChaptersCount(chapters.length);
   initChapterResetButtons();
+  
+  updateLoadMoreButton(chapters.length);
 }
 
 function updateTotalChapters(count) {
@@ -443,12 +457,126 @@ function updateEditorChaptersCount(count) {
   }
 }
 
+function updateLoadMoreButton(totalChapters) {
+  let loadMoreBtn = document.getElementById('btn-load-more');
+  let loadAllBtn = document.getElementById('btn-load-all');
+  let buttonsContainer = document.getElementById('load-more-buttons');
+  
+  if (totalChaptersRendered >= totalChapters) {
+    if (loadMoreBtn) {
+      loadMoreBtn.style.display = 'none';
+    }
+    if (loadAllBtn) {
+      loadAllBtn.style.display = 'none';
+    }
+    if (buttonsContainer) {
+      buttonsContainer.style.display = 'none';
+    }
+  } else {
+    const remaining = totalChapters - totalChaptersRendered;
+    
+    // Создаём контейнер для кнопок если нет
+    if (!buttonsContainer) {
+      buttonsContainer = document.createElement('div');
+      buttonsContainer.id = 'load-more-buttons';
+      buttonsContainer.className = 'load-more-buttons';
+      
+      const container = document.getElementById('chapters-list');
+      if (container) {
+        container.appendChild(buttonsContainer);
+      }
+    } else {
+      buttonsContainer.style.display = 'flex';
+      // Перемещаем контейнер в конец списка
+      const container = document.getElementById('chapters-list');
+      if (container) {
+        container.appendChild(buttonsContainer);
+      }
+    }
+    
+    // Кнопка "Показать ещё"
+    if (remaining > pageSize) {
+      if (!loadMoreBtn) {
+        loadMoreBtn = document.createElement('button');
+        loadMoreBtn.id = 'btn-load-more';
+        loadMoreBtn.className = 'btn-load-more';
+        loadMoreBtn.innerHTML = `<i class="fa-solid fa-angle-down"></i> Показать ещё (${pageSize})`;
+        loadMoreBtn.addEventListener('click', loadMoreChapters);
+        
+        buttonsContainer.appendChild(loadMoreBtn);
+      } else {
+        loadMoreBtn.style.display = 'inline-flex';
+        loadMoreBtn.innerHTML = `<i class="fa-solid fa-angle-down"></i> Показать ещё (${pageSize})`;
+      }
+    } else {
+      if (loadMoreBtn) {
+        loadMoreBtn.style.display = 'none';
+      }
+    }
+    
+    // Кнопка "Показать все"
+    if (!loadAllBtn) {
+      loadAllBtn = document.createElement('button');
+      loadAllBtn.id = 'btn-load-all';
+      loadAllBtn.className = 'btn-load-more';
+      loadAllBtn.innerHTML = `<i class="fa-solid fa-angles-down"></i> Показать все (${remaining})`;
+      loadAllBtn.addEventListener('click', loadAllChapters);
+      
+      buttonsContainer.appendChild(loadAllBtn);
+    } else {
+      loadAllBtn.style.display = 'inline-flex';
+      loadAllBtn.innerHTML = `<i class="fa-solid fa-angles-down"></i> Показать все (${remaining})`;
+    }
+  }
+}
+
+function loadMoreChapters() {
+  saveCurrentPageChanges();
+  
+  const uniqueChapters = getUniqueChapters(allChapters);
+  const uniqueOriginalChapters = getUniqueChapters(originalChapters);
+  
+  currentPage++;
+  const startIndex = currentPage * pageSize;
+  
+  renderChaptersList(uniqueChapters, uniqueOriginalChapters, startIndex, true);
+}
+
+function loadAllChapters() {
+  saveCurrentPageChanges();
+  
+  const uniqueChapters = getUniqueChapters(allChapters);
+  const uniqueOriginalChapters = getUniqueChapters(originalChapters);
+  
+  // Загружаем все оставшиеся главы (от текущей позиции до конца)
+  const startIndex = totalChaptersRendered;
+  
+  renderChaptersList(uniqueChapters, uniqueOriginalChapters, startIndex, true, true);
+}
+
+function saveCurrentPageChanges() {
+  const inputs = document.querySelectorAll('.chapter-input');
+  const uniqueChapters = getUniqueChapters(allChapters);
+
+  inputs.forEach((input) => {
+    const globalIndex = parseInt(input.dataset.index);
+    const originalCh = uniqueChapters[globalIndex];
+    if (originalCh) {
+      const value = input.value.trim() || input.dataset.default;
+      originalCh.displayTitle = value;
+    }
+  });
+}
+
+
+
 document.getElementById('btn-save').addEventListener('click', () => {
   const inputs = document.querySelectorAll('.chapter-input');
   const uniqueChapters = getUniqueChapters(allChapters);
 
-  inputs.forEach((input, i) => {
-    const originalCh = uniqueChapters[i];
+  inputs.forEach((input) => {
+    const globalIndex = parseInt(input.dataset.index);
+    const originalCh = uniqueChapters[globalIndex];
     if (originalCh) {
       const value = input.value.trim() || input.dataset.default;
       originalCh.displayTitle = value;
@@ -463,12 +591,8 @@ document.getElementById('btn-save').addEventListener('click', () => {
       titleData[currentSlug] = { chapters: null, metadata: {}, covers: [] };
     }
     
-    // Сохраняем все главы с изменёнными названиями (для popup и prepare)
-    // popup.js восстанавливает displayTitle по ключу ${id}_${branchId}
     titleData[currentSlug].chapters = allChapters;
-    // Сохраняем отфильтрованные главы для редактора (чтобы знать диапазон)
     titleData[currentSlug].filteredChapters = allChapters;
-    // Сохраняем настройки переводчиков
     titleData[currentSlug].chapterBranchOverrides = chapterBranchOverrides;
     titleData[currentSlug].translatorPriority = translatorPriority;
     
@@ -502,7 +626,6 @@ document.getElementById('btn-reset').addEventListener('click', () => {
   const uniqueOriginalChapters = getUniqueChapters(originalChapters);
   renderChaptersList(uniqueChapters, uniqueOriginalChapters);
   
-  // Пересчитываем приоритет по количеству глав (как при первом открытии)
   const translatorCounts = {};
   allChapters.forEach(ch => {
     if (ch.branches && Array.isArray(ch.branches)) {
@@ -533,17 +656,14 @@ function initChapterResetButtons() {
         input.value = input.dataset.default || '';
       }
       
-      // Сбрасываем индивидуальный выбор переводчика для этой главы
       const uniqueChapters = getUniqueChapters(allChapters);
       const chapter = uniqueChapters[index];
       if (chapter) {
         delete chapterBranchOverrides[chapter.id];
         
-        // Применяем приоритет переводчиков для этой главы
         const variants = getChapterVariants(chapter.id);
         applyTranslatorPriorityToChapter(chapter, variants, false);
         
-        // Обновляем селектор переводчика в UI
         const translatorSelect = document.querySelector(`.chapter-translator[data-chapter-id="${chapter.id}"]`);
         if (translatorSelect) {
           const currentTranslatorKey = chapterBranchOverrides[chapter.id];
@@ -558,7 +678,6 @@ function initChapterResetButtons() {
           }
           translatorSelect.textContent = currentTranslator;
           
-          // Обновляем выделение в dropdown
           const dropdown = translatorSelect.nextElementSibling;
           if (dropdown) {
             dropdown.querySelectorAll('.chapter-translator-option').forEach(opt => {

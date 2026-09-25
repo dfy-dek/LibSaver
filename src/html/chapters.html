@@ -48,6 +48,38 @@
       align-items: center;
       gap: var(--spacing-md);
     }
+    
+    .btn-load-more {
+      padding: 8px 16px;
+      font-size: 13px;
+      white-space: nowrap;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .btn-load-more:hover {
+      background-color: var(--bg-secondary);
+      border-color: var(--accent-color);
+    }
+    
+    .btn-load-more:active {
+      transform: scale(0.98);
+    }
+    
+    .load-more-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin: 16px auto;
+      padding: 0 16px;
+    }
     .toolbar-right .field {
       margin: 0;
       padding: 0;
