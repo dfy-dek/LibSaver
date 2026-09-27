@@ -9,7 +9,13 @@ let translatorPriority = [];
 // Переменные пагинации
 let currentPage = 0;
 let pageSize = 500;
+let initialChapterCount = 500;
+let loadMoreChapterCount = 500;
 let totalChaptersRendered = 0;
+let enablePagination = true;
+
+// Флаг для отслеживания изменений приоритета
+let priorityChanged = false;
 
 // Слушатель сообщений для обновления темы
 setupThemeMessageListener();
@@ -163,7 +169,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadAndApplyTheme();
   
   // Применяем акцентный цвет по сайту (из storage)
-  const result = await chrome.storage.local.get(['sourceUrl', 'titleData', 'originalTitleData', 'currentSlug', 'tocFormat', 'customTocFormat', 'hideChapterName', 'hideVolumeNumber']);
+  const result = await chrome.storage.local.get(['sourceUrl', 'titleData', 'originalTitleData', 'currentSlug', 'tocFormat', 'customTocFormat', 'hideChapterName', 'hideVolumeNumber', 'enablePagination', 'initialChapters', 'loadMoreChapters']);
   const sourceUrl = result.sourceUrl;
   if (sourceUrl) {
     window.applySiteAccent(sourceUrl);
@@ -196,6 +202,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (result.hideVolumeNumber !== undefined) {
     hideVolumeNumber = result.hideVolumeNumber;
   }
+  
+  // Применяем настройки пагинации
+  enablePagination = result.enablePagination !== false;
+  initialChapterCount = result.initialChapters || 500;
+  loadMoreChapterCount = result.loadMoreChapters || 500;
+  pageSize = loadMoreChapterCount;
   
   let totalChapters = 0;
   if (result.originalTitleData && result.originalTitleData[currentSlug] && result.originalTitleData[currentSlug].metadata) {
@@ -297,16 +309,26 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   }
 });
 
-function renderChaptersList(chapters, originalChapters, startIndex = 0, append = false, loadAll = false) {
+function renderChaptersList(chapters, originalChapters, startIndex = 0, append = false, loadAll = false, overridePageSize = null) {
   const container = document.getElementById('chapters-list');
   
   if (!append) {
     container.innerHTML = '';
     currentPage = 0;
     totalChaptersRendered = 0;
+    // Для первой загрузки используем initialChapterCount
+    if (enablePagination && startIndex === 0) {
+      pageSize = initialChapterCount;
+    } else {
+      pageSize = loadMoreChapterCount;
+    }
   }
   
-  const endIndex = loadAll ? chapters.length : Math.min(startIndex + pageSize, chapters.length);
+  // Если передан overridePageSize - используем его (для loadMoreChapters)
+  const effectivePageSize = overridePageSize || pageSize;
+  
+  // Если пагинация отключена или loadAll=true - рендерим все главы до конца
+  const endIndex = (!enablePagination || loadAll) ? chapters.length : Math.min(startIndex + effectivePageSize, chapters.length);
   const chaptersToRender = chapters.slice(startIndex, endIndex);
   
   chaptersToRender.forEach((ch, i) => {
@@ -458,6 +480,18 @@ function updateEditorChaptersCount(count) {
 }
 
 function updateLoadMoreButton(totalChapters) {
+  // Если пагинация отключена - не показываем кнопки
+  if (!enablePagination) {
+    const loadMoreBtn = document.getElementById('btn-load-more');
+    const loadAllBtn = document.getElementById('btn-load-all');
+    const buttonsContainer = document.getElementById('load-more-buttons');
+    
+    if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+    if (loadAllBtn) loadAllBtn.style.display = 'none';
+    if (buttonsContainer) buttonsContainer.style.display = 'none';
+    return;
+  }
+  
   let loadMoreBtn = document.getElementById('btn-load-more');
   let loadAllBtn = document.getElementById('btn-load-all');
   let buttonsContainer = document.getElementById('load-more-buttons');
@@ -495,18 +529,18 @@ function updateLoadMoreButton(totalChapters) {
     }
     
     // Кнопка "Показать ещё"
-    if (remaining > pageSize) {
+    if (remaining > loadMoreChapterCount) {
       if (!loadMoreBtn) {
         loadMoreBtn = document.createElement('button');
         loadMoreBtn.id = 'btn-load-more';
         loadMoreBtn.className = 'btn-load-more';
-        loadMoreBtn.innerHTML = `<i class="fa-solid fa-angle-down"></i> Показать ещё (${pageSize})`;
+        loadMoreBtn.innerHTML = `<i class="fa-solid fa-angle-down"></i> Показать ещё (${loadMoreChapterCount})`;
         loadMoreBtn.addEventListener('click', loadMoreChapters);
         
         buttonsContainer.appendChild(loadMoreBtn);
       } else {
         loadMoreBtn.style.display = 'inline-flex';
-        loadMoreBtn.innerHTML = `<i class="fa-solid fa-angle-down"></i> Показать ещё (${pageSize})`;
+        loadMoreBtn.innerHTML = `<i class="fa-solid fa-angle-down"></i> Показать ещё (${loadMoreChapterCount})`;
       }
     } else {
       if (loadMoreBtn) {
@@ -536,10 +570,12 @@ function loadMoreChapters() {
   const uniqueChapters = getUniqueChapters(allChapters);
   const uniqueOriginalChapters = getUniqueChapters(originalChapters);
   
-  currentPage++;
-  const startIndex = currentPage * pageSize;
+  // При загрузке "ещё" используем loadMoreChapterCount
+  const loadMoreSize = loadMoreChapterCount;
+  // startIndex должен быть количеством уже загруженных глав
+  const startIndex = totalChaptersRendered;
   
-  renderChaptersList(uniqueChapters, uniqueOriginalChapters, startIndex, true);
+  renderChaptersList(uniqueChapters, uniqueOriginalChapters, startIndex, true, false, loadMoreSize);
   
   // Переключаем кнопку скролла на "вниз"
   if (typeof switchScrollButtonToDown === 'function') {
@@ -593,6 +629,26 @@ document.getElementById('btn-save').addEventListener('click', () => {
     }
   });
 
+  // Заполняем пустые displayTitle дефолтными значениями для всех глав
+  // (включая непрогруженные в DOM)
+  const uniqueOriginalChapters = getUniqueChapters(originalChapters);
+  uniqueChapters.forEach((ch, index) => {
+    if (!ch.displayTitle) {
+      const originalCh = uniqueOriginalChapters[index];
+      if (originalCh) {
+        ch.displayTitle = formatChapterTitle(
+          originalCh.volume,
+          originalCh.number,
+          originalCh.name,
+          tocFormat,
+          customTocFormat,
+          hideChapterName,
+          hideVolumeNumber
+        );
+      }
+    }
+  });
+
   chrome.storage.local.get(['titleData', 'currentSlug'], (result) => {
     const titleData = result.titleData || {};
     const currentSlug = result.currentSlug;
@@ -633,9 +689,7 @@ document.getElementById('btn-reset').addEventListener('click', () => {
   chapterBranchOverrides = {};
   translatorPriority = [];
   
-  const uniqueOriginalChapters = getUniqueChapters(originalChapters);
-  renderChaptersList(uniqueChapters, uniqueOriginalChapters);
-  
+  // Сначала вычисляем новый приоритет на основе частоты
   const translatorCounts = {};
   allChapters.forEach(ch => {
     if (ch.branches && Array.isArray(ch.branches)) {
@@ -651,7 +705,9 @@ document.getElementById('btn-reset').addEventListener('click', () => {
   
   translatorPriority = Object.keys(translatorCounts).sort((a, b) => translatorCounts[b] - translatorCounts[a]);
   populateTranslators();
-  applyTranslatorPriority();
+  
+  // Применяем приоритет и обновляем DOM без полного рендера (сохраняет пагинацию)
+  applyTranslatorPriority(true, false, true);
 });
 
 
@@ -688,7 +744,8 @@ function initChapterResetButtons() {
           }
           translatorSelect.textContent = currentTranslator;
           
-          const dropdown = translatorSelect.nextElementSibling;
+          // dropdown находится ПЕРЕД translatorSelect в DOM (previousElementSibling)
+          const dropdown = translatorSelect.previousElementSibling;
           if (dropdown) {
             dropdown.querySelectorAll('.chapter-translator-option').forEach(opt => {
               opt.classList.remove('selected');
@@ -869,6 +926,7 @@ function updatePriorityFromList(listElement) {
     newPriority.push(item.dataset.translatorKey);
   });
   translatorPriority = newPriority;
+  priorityChanged = true;
   
   const translatorSelect = document.getElementById('translator-select');
   if (translatorSelect && newPriority.length > 0) {
@@ -881,10 +939,12 @@ function updatePriorityFromList(listElement) {
   }
   
   // Если глав меньше 800, обновляем сразу (старая схема)
+  // Обновляем только DOM без полного рендера (сохраняет пагинацию)
   const uniqueChapters = getUniqueChapters(allChapters);
   if (uniqueChapters.length < 800) {
-    applyTranslatorPriority(true);
+    applyTranslatorPriority(true, false, true); // updateDomOnly=true
   }
+  // Если глав много (>800), приоритет не применяется сразу для оптимизации
 }
 
 // Очистить все названия глав с двухэтапным подтверждением
@@ -954,10 +1014,16 @@ function initTranslatorPriorityPopup() {
         updatePriorityList(list);
       },
       onHide: () => {
-        // Обновляем список глав только при закрытии tippy (уход мыши) если глав >= 800
-        const uniqueChapters = getUniqueChapters(allChapters);
-        if (uniqueChapters.length >= 800) {
-          applyTranslatorPriority(true);
+        // Обновляем список глав только при закрытии tippy (уход мыши) если:
+        // 1. Были изменения в приоритете
+        // 2. И глав >= 800 (оптимизация)
+        // Обновляем только DOM без полного рендера (сохраняет пагинацию)
+        if (priorityChanged) {
+          const uniqueChapters = getUniqueChapters(allChapters);
+          if (uniqueChapters.length >= 800) {
+            applyTranslatorPriority(true, false, true); // updateDomOnly=true
+          }
+          priorityChanged = false;
         }
       }
     });
@@ -990,8 +1056,9 @@ function applyTranslatorPriorityToChapter(chapter, variants, allowOverride = tru
   }
 }
 
-function applyTranslatorPriority(allowOverride = true) {
-  if (translatorPriority.length === 0) return;
+function applyTranslatorPriority(allowOverride = true, forceRenderAll = false, updateDomOnly = false) {
+  // Если принудительно requested (сброс) - рендерим даже если приоритет пуст
+  if (translatorPriority.length === 0 && !forceRenderAll) return;
   
   const uniqueChapters = getUniqueChapters(allChapters);
   
@@ -1000,6 +1067,73 @@ function applyTranslatorPriority(allowOverride = true) {
     applyTranslatorPriorityToChapter(ch, variants, allowOverride);
   });
   
-  const uniqueOriginalChapters = getUniqueChapters(originalChapters);
-  renderChaptersList(uniqueChapters, uniqueOriginalChapters);
+  // Если updateDomOnly=true - обновляем только DOM без полного рендера
+  if (updateDomOnly) {
+    updateChapterDom(uniqueChapters);
+    return;
+  }
+  
+  // Рендерим только если:
+  // 1. Принудительно requested (forceRenderAll=true - для сброса)
+  // 2. Или если не все главы загружены (для пагинации)
+  if (forceRenderAll || totalChaptersRendered < uniqueChapters.length) {
+    const uniqueOriginalChapters = getUniqueChapters(originalChapters);
+    // Если forceRenderAll=true - рендерим все главы (loadAll=true)
+    renderChaptersList(uniqueChapters, uniqueOriginalChapters, 0, false, forceRenderAll);
+  }
+}
+
+// Обновляет DOM элементы глав без полного рендера (сохраняет пагинацию)
+function updateChapterDom(uniqueChapters) {
+  uniqueChapters.forEach((ch, index) => {
+    // Обновляем только если элемент существует в DOM
+    const input = document.querySelector(`.chapter-input[data-index="${index}"]`);
+    if (input) {
+      const defaultValue = input.dataset.default;
+      input.value = ch.displayTitle || defaultValue;
+    }
+    
+    // Обновляем текст переводчика
+    const translatorSelect = document.querySelector(`.chapter-translator[data-chapter-id="${ch.id}"]`);
+    if (translatorSelect) {
+      const variants = getChapterVariants(ch.id);
+      
+      // Вычисляем currentTranslatorKey так же как при рендере
+      let currentTranslatorKey = chapterBranchOverrides[ch.id];
+      if (!currentTranslatorKey && translatorPriority.length > 0) {
+        for (const priorityKey of translatorPriority) {
+          if (variants.has(priorityKey)) {
+            currentTranslatorKey = priorityKey;
+            break;
+          }
+        }
+      }
+      if (!currentTranslatorKey && ch.branches && ch.branches[0]) {
+        currentTranslatorKey = getTranslatorKey(ch.branches[0]);
+      }
+      
+      let currentTranslator = '';
+      if (currentTranslatorKey && variants.has(currentTranslatorKey)) {
+        currentTranslator = variants.get(currentTranslatorKey);
+      } else if (ch.branches && ch.branches[0]) {
+        currentTranslator = getTranslatorName(ch.branches[0]);
+      } else {
+        currentTranslator = ch.branchTeamName || 'Основной перевод';
+      }
+      
+      translatorSelect.textContent = currentTranslator;
+      
+      // Обновляем выбранный вариант в dropdown
+      // dropdown находится ПЕРЕД translatorSelect в DOM (previousElementSibling)
+      const dropdown = translatorSelect.previousElementSibling;
+      if (dropdown) {
+        dropdown.querySelectorAll('.chapter-translator-option').forEach(opt => {
+          opt.classList.remove('selected');
+          if (opt.dataset.translatorKey === currentTranslatorKey) {
+            opt.classList.add('selected');
+          }
+        });
+      }
+    }
+  });
 }

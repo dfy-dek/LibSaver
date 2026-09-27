@@ -89,6 +89,16 @@ function applySettingsToUI(settings, metadataFields) {
   document.getElementById('disable-site-menu').checked = settings.disableSiteMenu || false;
   document.getElementById('debug-logging').checked = settings.debugLogging || false;
 
+  // Chapters pagination settings
+  document.getElementById('enable-pagination').checked = settings.enablePagination !== false;
+  document.getElementById('initial-chapters').value = settings.initialChapters || 500;
+  document.getElementById('initial-chapters-value').textContent = settings.initialChapters || 500;
+  document.getElementById('load-more-chapters').value = settings.loadMoreChapters || 500;
+  document.getElementById('load-more-chapters-value').textContent = settings.loadMoreChapters || 500;
+
+  // Show/hide pagination settings based on checkbox
+  updatePaginationSettingsVisibility();
+
   // PDF settings
   document.getElementById('pdf-font').value = settings.pdfFont || 'merriweather';
   // Применяем шрифт к select
@@ -197,6 +207,20 @@ function updatePdfJpegQualityFieldVisibility() {
     pdfJpegQualityField.style.display = 'block';
   } else {
     pdfJpegQualityField.style.display = 'none';
+  }
+}
+
+// Показать/скрыть настройки пагинации в зависимости от чекбокса
+function updatePaginationSettingsVisibility() {
+  const enablePagination = document.getElementById('enable-pagination')?.checked;
+  const initialChaptersField = document.getElementById('initial-chapters-field');
+  const loadMoreChaptersField = document.getElementById('load-more-chapters-field');
+  
+  if (initialChaptersField) {
+    initialChaptersField.style.display = enablePagination ? 'flex' : 'none';
+  }
+  if (loadMoreChaptersField) {
+    loadMoreChaptersField.style.display = enablePagination ? 'flex' : 'none';
   }
 }
 
@@ -367,7 +391,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     'pdfLineSpacing',
     'pdfParagraphSpacing',
     'pdfImageFormat',
-    'pdfJpegQuality'
+    'pdfJpegQuality',
+    'enablePagination',
+    'initialChapters',
+    'loadMoreChapters'
   ]);
   
   const metadataFields = await chrome.storage.local.get(['metadataFields']);
@@ -378,6 +405,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Инициализация видимости полей
   updateJpegQualityFieldVisibility();
   updatePdfJpegQualityFieldVisibility();
+  updatePaginationSettingsVisibility();
 
   // Обновление значения ползунка адаптивного соотношения
   document.getElementById('adaptive-ratio').addEventListener('input', (e) => {
@@ -393,6 +421,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('pdf-jpeg-quality').addEventListener('input', (e) => {
     document.getElementById('pdf-jpeg-quality-value').textContent = e.target.value;
   });
+
+  // Обновление значения ползунка количества глав
+  document.getElementById('initial-chapters').addEventListener('input', (e) => {
+    document.getElementById('initial-chapters-value').textContent = e.target.value;
+  });
+
+  document.getElementById('load-more-chapters').addEventListener('input', (e) => {
+    document.getElementById('load-more-chapters-value').textContent = e.target.value;
+  });
+
+  // Показать/скрыть настройки пагинации при изменении чекбокса
+  document.getElementById('enable-pagination').addEventListener('change', updatePaginationSettingsVisibility);
 
   document.getElementById('image-format').addEventListener('change', updateJpegQualityFieldVisibility);
   document.getElementById('pdf-image-format').addEventListener('change', updatePdfJpegQualityFieldVisibility);
@@ -564,7 +604,10 @@ document.getElementById('btn-save').addEventListener('click', async () => {
     pdfLineSpacing: parseInt(document.getElementById('pdf-line-spacing').value),
     pdfParagraphSpacing: parseFloat(document.getElementById('pdf-paragraph-spacing').value),
     pdfImageFormat: document.getElementById('pdf-image-format').value,
-    pdfJpegQuality: parseFloat(document.getElementById('pdf-jpeg-quality').value)
+    pdfJpegQuality: parseFloat(document.getElementById('pdf-jpeg-quality').value),
+    enablePagination: document.getElementById('enable-pagination').checked,
+    initialChapters: parseInt(document.getElementById('initial-chapters').value),
+    loadMoreChapters: parseInt(document.getElementById('load-more-chapters').value)
   };
 
   await chrome.storage.local.set(settings);
@@ -602,6 +645,11 @@ const DEFAULT_SETTINGS_BY_GROUP = {
     'custom-toc-format': 'Том {vol} Глава {num} {name}',
     'hide-chapter-name': false,
     'hide-volume-number': false
+  },
+  chapters: {
+    'enable-pagination': true,
+    'initial-chapters': 500,
+    'load-more-chapters': 500
   },
   txt: {
     'txt-image-marker': 'numbered'
@@ -689,6 +737,37 @@ function resetGroupSettings(group) {
 
     // Обновляем видимость полей после сброса
     updateJpegQualityFieldVisibility();
+  } else if (group === 'chapters') {
+    // Сброс настроек редактора оглавления
+    for (const [key, value] of Object.entries(defaults)) {
+      const element = document.getElementById(key);
+      if (!element) continue;
+
+      if (element.type === 'checkbox') {
+        element.checked = value;
+        // Убираем inline стили, чтобы CSS работал корректно
+        const indicator = element.parentElement.querySelector('.control__indicator');
+        if (indicator) {
+          const checkedIcon = indicator.querySelector('svg[data-state="checked"]');
+          const defaultIcon = indicator.querySelector('svg[data-state="default"]');
+          if (checkedIcon) checkedIcon.style.display = '';
+          if (defaultIcon) defaultIcon.style.display = '';
+          if (checkedIcon) checkedIcon.style.color = '';
+        }
+      } else if (element.tagName === 'SELECT' || element.tagName === 'INPUT') {
+        element.value = value;
+        // Обновляем отображаемое значение для ползунков
+        if (element.type === 'range') {
+          const valueElement = document.getElementById(key + '-value');
+          if (valueElement) {
+            valueElement.textContent = value;
+          }
+        }
+      }
+    }
+
+    // Обновляем видимость полей после сброса
+    updatePaginationSettingsVisibility();
   } else if (group === 'pdf') {
     // Сброс настроек PDF
     for (const [key, value] of Object.entries(defaults)) {
