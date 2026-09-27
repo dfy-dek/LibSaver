@@ -12,7 +12,7 @@ let pageSize = 500;
 let initialChapterCount = 500;
 let loadMoreChapterCount = 500;
 let totalChaptersRendered = 0;
-let enablePagination = true;
+let enablePagination = false;
 
 // Флаг для отслеживания изменений приоритета
 let priorityChanged = false;
@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   
   // Применяем настройки пагинации
-  enablePagination = result.enablePagination !== false;
+  enablePagination = result.enablePagination === true;
   initialChapterCount = result.initialChapters || 500;
   loadMoreChapterCount = result.loadMoreChapters || 500;
   pageSize = loadMoreChapterCount;

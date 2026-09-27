@@ -87,10 +87,10 @@ function applySettingsToUI(settings, metadataFields) {
   document.getElementById('image-format').value = settings.imageFormat || 'original';
   document.getElementById('disable-toc').checked = settings.disableToc || false;
   document.getElementById('disable-site-menu').checked = settings.disableSiteMenu || false;
-  document.getElementById('debug-logging').checked = settings.debugLogging || false;
+  document.getElementById('debug-logging').checked = settings.debugLogging !== false;
 
   // Chapters pagination settings
-  document.getElementById('enable-pagination').checked = settings.enablePagination !== false;
+  document.getElementById('enable-pagination').checked = settings.enablePagination === true;
   document.getElementById('initial-chapters').value = settings.initialChapters || 500;
   document.getElementById('initial-chapters-value').textContent = settings.initialChapters || 500;
   document.getElementById('load-more-chapters').value = settings.loadMoreChapters || 500;
@@ -629,7 +629,7 @@ const DEFAULT_SETTINGS_BY_GROUP = {
   general: {
     'disable-toc': false,
     'disable-site-menu': false,
-    'debug-logging': false
+    'debug-logging': true
   },
   images: {
     'cover-quality': 'ORIGINAL',
@@ -647,7 +647,7 @@ const DEFAULT_SETTINGS_BY_GROUP = {
     'hide-volume-number': false
   },
   chapters: {
-    'enable-pagination': true,
+    'enable-pagination': false,
     'initial-chapters': 500,
     'load-more-chapters': 500
   },
@@ -848,12 +848,17 @@ document.getElementById('btn-reset').addEventListener('click', async () => {
     enableCoverEditor: true,
     enableChaptersEditor: true,
     disableToc: false, // Включено по умолчанию - оглавление + отдельная страница
+    disableSiteMenu: false,
+    debugLogging: true, // Включено по умолчанию - подробное логирование
     tocFormat: 'default',
     customTocFormat: '',
     hideChapterName: false,
     hideVolumeNumber: false,
     pdfImageFormat: 'original-png',
-    pdfJpegQuality: 1.0
+    pdfJpegQuality: 1.0,
+    enablePagination: false, // Выключено по умолчанию
+    initialChapters: 500,
+    loadMoreChapters: 500
   };
 
   // Сбрасываем тексты option'ов к оригинальным
@@ -886,6 +891,7 @@ document.getElementById('btn-reset').addEventListener('click', async () => {
   updateJpegQualityFieldVisibility();
   updatePdfJpegQualityFieldVisibility();
   updateTocOptionTexts();
+  updatePaginationSettingsVisibility();
 
   // Устанавливаем флаг, что изменения не сохранены
   wasSaved = false;
