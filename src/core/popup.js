@@ -706,15 +706,19 @@ document.getElementById('chapter-from').addEventListener('change', async (e) => 
   if (toIdx < fromIdx) {
     toSelect.value = fromIdx;
   }
-  
-  // Обновляем сохраненный диапазон при изменении
+
+  // Обновляем сохраненный диапазон и пересоздаём filteredChapters при изменении
   const result = await chrome.storage.local.get(['titleData', 'currentSlug']);
   const titleData = result.titleData || {};
   const currentSlug = result.currentSlug;
-  
+
   if (titleData[currentSlug]) {
     titleData[currentSlug].fromIdx = fromIdx;
     titleData[currentSlug].toIdx = parseInt(toSelect.value);
+    // Пересоздаём filteredChapters на основе текущего allChapters и нового диапазона
+    if (titleData[currentSlug].chapters) {
+      titleData[currentSlug].filteredChapters = titleData[currentSlug].chapters.slice(fromIdx, parseInt(toSelect.value) + 1);
+    }
     await chrome.storage.local.set({ titleData });
   }
 });
@@ -726,15 +730,19 @@ document.getElementById('chapter-to').addEventListener('change', async (e) => {
   if (fromIdx > toIdx) {
     fromSelect.value = toIdx;
   }
-  
-  // Обновляем сохраненный диапазон при изменении
+
+  // Обновляем сохраненный диапазон и пересоздаём filteredChapters при изменении
   const result = await chrome.storage.local.get(['titleData', 'currentSlug']);
   const titleData = result.titleData || {};
   const currentSlug = result.currentSlug;
-  
+
   if (titleData[currentSlug]) {
     titleData[currentSlug].fromIdx = parseInt(fromSelect.value);
     titleData[currentSlug].toIdx = toIdx;
+    // Пересоздаём filteredChapters на основе текущего allChapters и нового диапазона
+    if (titleData[currentSlug].chapters) {
+      titleData[currentSlug].filteredChapters = titleData[currentSlug].chapters.slice(parseInt(fromSelect.value), toIdx + 1);
+    }
     await chrome.storage.local.set({ titleData });
   }
 });
