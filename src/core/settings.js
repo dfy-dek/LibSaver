@@ -87,7 +87,7 @@ function applySettingsToUI(settings, metadataFields) {
   document.getElementById('image-format').value = settings.imageFormat || 'original';
   document.getElementById('disable-toc').checked = settings.disableToc || false;
   document.getElementById('disable-site-menu').checked = settings.disableSiteMenu || false;
-  document.getElementById('debug-logging').checked = settings.debugLogging !== false;
+  document.getElementById('debug-logging').checked = settings.debugLogging || false;
 
   // Chapters pagination settings
   document.getElementById('enable-pagination').checked = settings.enablePagination === true;
@@ -629,7 +629,7 @@ const DEFAULT_SETTINGS_BY_GROUP = {
   general: {
     'disable-toc': false,
     'disable-site-menu': false,
-    'debug-logging': true
+    'debug-logging': false
   },
   images: {
     'cover-quality': 'ORIGINAL',
@@ -847,16 +847,16 @@ document.getElementById('btn-reset').addEventListener('click', async () => {
     enableMetadataEditor: true,
     enableCoverEditor: true,
     enableChaptersEditor: true,
-    disableToc: false, // Включено по умолчанию - оглавление + отдельная страница
+    disableToc: false,
     disableSiteMenu: false,
-    debugLogging: true, // Включено по умолчанию - подробное логирование
+    debugLogging: false,
     tocFormat: 'default',
     customTocFormat: '',
     hideChapterName: false,
     hideVolumeNumber: false,
     pdfImageFormat: 'original-png',
     pdfJpegQuality: 1.0,
-    enablePagination: false, // Выключено по умолчанию
+    enablePagination: false,
     initialChapters: 500,
     loadMoreChapters: 500
   };
