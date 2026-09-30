@@ -556,7 +556,7 @@ function openPopupWindow(url, withTargetTabId = false) {
     
     for (const win of windows) {
       for (const tab of win.tabs) {
-        if (tab.url.includes(url)) {
+        if (tab.url && tab.url.includes(url)) {
           existingWindow = win;
           break;
         }
