@@ -627,7 +627,6 @@ document.getElementById('btn-save').addEventListener('click', async () => {
 // Дефолтные значения по группам
 const DEFAULT_SETTINGS_BY_GROUP = {
   general: {
-    'disable-toc': false,
     'disable-site-menu': false,
     'debug-logging': false
   },
