@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'year': true,
         'status': true,
         'country': true,
+        'release-format': true,
         'publisher': true,
         'age-restriction': true,
         'description': true,
@@ -103,6 +104,7 @@ function fillFieldsFromSite() {
   document.getElementById('year').value = userMetadata.year || '';
   document.getElementById('status').value = userMetadata.status || '';
   document.getElementById('country').value = userMetadata.country || '';
+  document.getElementById('release-format').value = userMetadata.releaseFormat || '';
   document.getElementById('publisher').value = userMetadata.publisher || '';
   document.getElementById('age-restriction').value = userMetadata.ageRestriction || '';
   document.getElementById('description').value = userMetadata.description || '';
@@ -264,6 +266,9 @@ document.getElementById('btn-save').addEventListener('click', () => {
   if (metadataFields['country'] !== false) {
     metadata.country = document.getElementById('country').value;
   }
+  if (metadataFields['release-format'] !== false) {
+    metadata.releaseFormat = document.getElementById('release-format').value;
+  }
   if (metadataFields['publisher'] !== false) {
     metadata.publisher = document.getElementById('publisher').value;
   }
@@ -327,6 +332,7 @@ document.getElementById('btn-reset').addEventListener('click', () => {
       document.getElementById('year').value = resetMetadata.year || '';
       document.getElementById('status').value = resetMetadata.status || '';
       document.getElementById('country').value = resetMetadata.country || '';
+      document.getElementById('release-format').value = resetMetadata.releaseFormat || '';
       document.getElementById('publisher').value = resetMetadata.publisher || '';
       document.getElementById('age-restriction').value = resetMetadata.ageRestriction || '';
       document.getElementById('description').value = resetMetadata.description || '';
@@ -362,6 +368,7 @@ document.getElementById('btn-reset').addEventListener('click', () => {
           document.getElementById('year').value = savedMetadata.year || '';
           document.getElementById('status').value = savedMetadata.status || '';
           document.getElementById('country').value = savedMetadata.country || '';
+          document.getElementById('release-format').value = savedMetadata.releaseFormat || '';
           document.getElementById('publisher').value = savedMetadata.publisher || '';
           document.getElementById('age-restriction').value = savedMetadata.ageRestriction || '';
           document.getElementById('description').value = savedMetadata.description || '';
@@ -404,6 +411,7 @@ document.getElementById('btn-reset-order').addEventListener('click', () => {
       'year',
       'status',
       'country',
+      'release-format',
       'publisher',
       'age-restriction',
       'description',
@@ -489,6 +497,7 @@ function initFieldResetButtons() {
         'year': 'year',
         'status': 'status',
         'country': 'country',
+        'release-format': 'releaseFormat',
         'publisher': 'publisher',
         'age-restriction': 'ageRestriction',
         'description': 'description',
@@ -507,6 +516,7 @@ function initFieldResetButtons() {
         'year': 'Год',
         'status': 'Статус',
         'country': 'Тип',
+        'release-format': 'Формат',
         'publisher': 'Издательство',
         'age-restriction': 'Возрастной рейтинг',
         'description': 'Описание',

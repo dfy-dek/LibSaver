@@ -68,6 +68,7 @@ const DEFAULT_METADATA_FIELDS = {
   'year': true,
   'status': true,
   'country': true,
+  'release-format': true,
   'publisher': true,
   'age-restriction': true,
   'description': true,

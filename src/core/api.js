@@ -486,6 +486,9 @@ async function loadMetadata(tabId) {
             year: infoData.data.releaseDate || '',
             status: `${infoData.data.status?.label || ''} / ${infoData.data.scanlateStatus?.label || ''}`,
             country: infoData.data.type?.label || '',
+            releaseFormat: Array.isArray(infoData.data.format)
+              ? infoData.data.format.map(f => f?.name || '').filter(Boolean).join(', ')
+              : '',
             publisher: Array.isArray(infoData.data.publisher)
               ? infoData.data.publisher.map(p => p?.name || '').filter(Boolean).join(', ')
               : '',
