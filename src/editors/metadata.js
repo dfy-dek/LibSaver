@@ -444,6 +444,7 @@ document.getElementById('btn-clear-all').addEventListener('click', () => {
     document.getElementById('year').value = '';
     document.getElementById('status').value = '';
     document.getElementById('country').value = '';
+    document.getElementById('release-format').value = '';
     document.getElementById('publisher').value = '';
     document.getElementById('age-restriction').value = '';
     document.getElementById('description').value = '';
