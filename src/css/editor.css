@@ -140,6 +140,15 @@ label.editing {
   pointer-events: none;
 }
 
+.field.disabled .field-header-buttons {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.field.disabled .field-header-buttons button {
+  cursor: default;
+}
+
 /* Drag and Drop стили */
 .sortable-ghost {
   opacity: 0.4;
@@ -154,6 +163,11 @@ label.editing {
 }
 
 .sortable-drag {
+  opacity: 0;
+  overflow: hidden;
+}
+
+.field.disabled.sortable-drag {
   opacity: 0;
   overflow: hidden;
 }
