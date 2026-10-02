@@ -1131,7 +1131,8 @@ class BaseFormatter {
     pageCount,
     translators,
     webUrl,
-    coverFiles = []
+    coverFiles = [],
+    totalVolumes = 0
   ) {
     // Проверка и подготовка данных
     const series = editedMetadata.titleRu || originalMetadata.titleRu;
@@ -1192,6 +1193,11 @@ class BaseFormatter {
 
     xml += `  <Number>${volumeNum}</Number>\n`;
     xml += `  <Volume>${volumeNum}</Volume>\n`;
+
+    // Добавляем Count только если статус = "Завершён / Завершён"
+    if (originalMetadata.status === 'Завершён / Завершён' && totalVolumes >= 0) {
+      xml += `  <Count>${totalVolumes}</Count>\n`;
+    }
 
     if (summary) {
       xml += `  <Summary>${this.escapeXml(summary)}</Summary>\n`;

@@ -15,24 +15,30 @@ class CbzFormatter extends BaseFormatter {
     const chapterBranchOverrides = this.options.chapterBranchOverrides || {};
     const translatorPriority = this.options.translatorPriority || [];
 
-    // Загружаем originalTitleData и sourceUrl для ComicInfo.xml
+    // Загружаем originalTitleData, titleData и sourceUrl для ComicInfo.xml
     const tabId = this.options.tabId;
     const slug = this.options.slug;
     let originalMetadata = {}; // Оригинальные метаданные с сайта
+    let allChapters = []; // Все главы с сайта для подсчёта томов
     let sourceUrl = '';
 
     if (tabId && slug) {
       try {
-        const result = await chrome.storage.local.get(['originalTitleData', 'sourceUrl']);
+        const result = await chrome.storage.local.get(['originalTitleData', 'titleData', 'sourceUrl']);
 
         // Загружаем оригинальные метаданные с сайта
         if (result.originalTitleData && result.originalTitleData[slug]) {
           originalMetadata = result.originalTitleData[slug].metadata || {};
         }
 
+        // Загружаем все главы с сайта для подсчёта максимального тома
+        if (result.titleData && result.titleData[slug] && result.titleData[slug].chapters) {
+          allChapters = result.titleData[slug].chapters;
+        }
+
         sourceUrl = result.sourceUrl || '';
       } catch (e) {
-        console.error('Ошибка при загрузке originalTitleData и sourceUrl:', e);
+        console.error('Ошибка при загрузке originalTitleData, titleData и sourceUrl:', e);
       }
     }
 
@@ -66,7 +72,7 @@ class CbzFormatter extends BaseFormatter {
       const volumeChapters = chaptersByVolume[volume];
       let globalProcessedCount = 0;
       const selectedCount = volumeChapters.length;
-      const volumeResult = await this.createVolumeArchive(volume, volumeChapters, metadata, imageServer, chapterBranchOverrides, translatorPriority, globalProcessedCount, selectedCount, true, originalMetadata, sourceUrl);
+      const volumeResult = await this.createVolumeArchive(volume, volumeChapters, metadata, imageServer, chapterBranchOverrides, translatorPriority, globalProcessedCount, selectedCount, true, originalMetadata, sourceUrl, allChapters);
 
       // Обновляем статистику (картинки без обложек)
       if (window.setTotalChapters) {
@@ -93,7 +99,7 @@ class CbzFormatter extends BaseFormatter {
       const volume = volumes[i];
       const volumeChapters = chaptersByVolume[volume];
       const isFirstVolume = (i === 0);
-      const volumeResult = await this.createVolumeArchive(volume, volumeChapters, metadata, imageServer, chapterBranchOverrides, translatorPriority, globalProcessedCount, totalChaptersCount, isFirstVolume, originalMetadata, sourceUrl);
+      const volumeResult = await this.createVolumeArchive(volume, volumeChapters, metadata, imageServer, chapterBranchOverrides, translatorPriority, globalProcessedCount, totalChaptersCount, isFirstVolume, originalMetadata, sourceUrl, allChapters);
       globalProcessedCount += volumeChapters.length;
       totalImagesAllVolumes += volumeResult.totalImages;
       totalCoversAllVolumes += volumeResult.coversDownloaded;
@@ -123,7 +129,7 @@ class CbzFormatter extends BaseFormatter {
     return { blob: mainBlob, filename: mainFilename };
   }
   
-  async createVolumeArchive(volume, chapters, metadata, imageServer, chapterBranchOverrides, translatorPriority, globalProcessedCount = 0, totalChaptersCount = 0, isFirstVolume = false, originalMetadata = {}, sourceUrl = '') {
+  async createVolumeArchive(volume, chapters, metadata, imageServer, chapterBranchOverrides, translatorPriority, globalProcessedCount = 0, totalChaptersCount = 0, isFirstVolume = false, originalMetadata = {}, sourceUrl = '', allChapters = []) {
     const addLog = this.options.addLog || (() => {});
     const volumeZip = new JSZip();
     const tabId = this.options.tabId;
@@ -395,6 +401,14 @@ class CbzFormatter extends BaseFormatter {
       // Вычисляем PageCount (страницы без обложек)
       const pageCount = totalImages - coversStats.downloaded;
 
+      // Вычисляем общее количество томов (количество уникальных томов)
+      let totalVolumes = 0;
+      if (allChapters && allChapters.length > 0) {
+        const volumes = allChapters.map(ch => parseInt(ch.volume) || 0);
+        const uniqueVolumes = [...new Set(volumes)];
+        totalVolumes = uniqueVolumes.length;
+      }
+
       // Генерируем ComicInfo.xml
       const comicInfoXml = this.generateComicInfoXml(
         metadata,
@@ -403,7 +417,8 @@ class CbzFormatter extends BaseFormatter {
         pageCount,
         translatorsString,
         sourceUrl,
-        coverFiles
+        coverFiles,
+        totalVolumes
       );
 
       // Добавляем ComicInfo.xml в архив первым файлом
