@@ -15,6 +15,27 @@ class CbzFormatter extends BaseFormatter {
     const chapterBranchOverrides = this.options.chapterBranchOverrides || {};
     const translatorPriority = this.options.translatorPriority || [];
 
+    // Загружаем originalTitleData и sourceUrl для ComicInfo.xml
+    const tabId = this.options.tabId;
+    const slug = this.options.slug;
+    let originalMetadata = {}; // Оригинальные метаданные с сайта
+    let sourceUrl = '';
+
+    if (tabId && slug) {
+      try {
+        const result = await chrome.storage.local.get(['originalTitleData', 'sourceUrl']);
+
+        // Загружаем оригинальные метаданные с сайта
+        if (result.originalTitleData && result.originalTitleData[slug]) {
+          originalMetadata = result.originalTitleData[slug].metadata || {};
+        }
+
+        sourceUrl = result.sourceUrl || '';
+      } catch (e) {
+        console.error('Ошибка при загрузке originalTitleData и sourceUrl:', e);
+      }
+    }
+
     // Группируем главы по томам
     const chaptersByVolume = {};
     for (const chapter of chapters) {
@@ -45,7 +66,7 @@ class CbzFormatter extends BaseFormatter {
       const volumeChapters = chaptersByVolume[volume];
       let globalProcessedCount = 0;
       const selectedCount = volumeChapters.length;
-      const volumeResult = await this.createVolumeArchive(volume, volumeChapters, metadata, imageServer, chapterBranchOverrides, translatorPriority, globalProcessedCount, selectedCount, true);
+      const volumeResult = await this.createVolumeArchive(volume, volumeChapters, metadata, imageServer, chapterBranchOverrides, translatorPriority, globalProcessedCount, selectedCount, true, originalMetadata, sourceUrl);
 
       // Обновляем статистику (картинки без обложек)
       if (window.setTotalChapters) {
@@ -72,7 +93,7 @@ class CbzFormatter extends BaseFormatter {
       const volume = volumes[i];
       const volumeChapters = chaptersByVolume[volume];
       const isFirstVolume = (i === 0);
-      const volumeResult = await this.createVolumeArchive(volume, volumeChapters, metadata, imageServer, chapterBranchOverrides, translatorPriority, globalProcessedCount, totalChaptersCount, isFirstVolume);
+      const volumeResult = await this.createVolumeArchive(volume, volumeChapters, metadata, imageServer, chapterBranchOverrides, translatorPriority, globalProcessedCount, totalChaptersCount, isFirstVolume, originalMetadata, sourceUrl);
       globalProcessedCount += volumeChapters.length;
       totalImagesAllVolumes += volumeResult.totalImages;
       totalCoversAllVolumes += volumeResult.coversDownloaded;
@@ -102,16 +123,19 @@ class CbzFormatter extends BaseFormatter {
     return { blob: mainBlob, filename: mainFilename };
   }
   
-  async createVolumeArchive(volume, chapters, metadata, imageServer, chapterBranchOverrides, translatorPriority, globalProcessedCount = 0, totalChaptersCount = 0, isFirstVolume = false) {
+  async createVolumeArchive(volume, chapters, metadata, imageServer, chapterBranchOverrides, translatorPriority, globalProcessedCount = 0, totalChaptersCount = 0, isFirstVolume = false, originalMetadata = {}, sourceUrl = '') {
     const addLog = this.options.addLog || (() => {});
     const volumeZip = new JSZip();
     const tabId = this.options.tabId;
     const slug = this.options.slug;
-    
+
     let totalImages = 0;
     let processedChapters = 0;
     let imagesFailed = 0;
     let coversStats = { downloaded: 0, failed: 0, total: 0 };
+
+    // Сбор переводчиков для ComicInfo.xml
+    const volumeTranslators = new Set();
     
     // Скачиваем обложки только для первого тома
     if (isFirstVolume) {
@@ -254,6 +278,13 @@ class CbzFormatter extends BaseFormatter {
         continue;
       }
 
+      // Добавляем переводчика в Set для ComicInfo.xml
+      if (pagesResult.translatorInfo && pagesResult.translatorInfo.downloadedTranslatorName) {
+        volumeTranslators.add(pagesResult.translatorInfo.downloadedTranslatorName);
+      } else if (selectedTranslatorName && selectedTranslatorName !== 'Неизвестный') {
+        volumeTranslators.add(selectedTranslatorName);
+      }
+
       // Обновляем прогресс с глобальным счётчиком
       if (this.options.updateProgress) {
         this.options.updateProgress(globalProcessedCount + processedChapters, totalChaptersCount);
@@ -349,6 +380,32 @@ class CbzFormatter extends BaseFormatter {
       processedChapters++;
       if (window.incrementTotalChapters) {
         window.incrementTotalChapters();
+      }
+    }
+
+    // Генерируем ComicInfo.xml для CBZ формата (манга)
+    const format = this.options.format || 'cbz';
+
+    if (format === 'cbz' || format === 'zip') {
+      // Собираем переводчиков в строку через "/"
+      const translatorsString = Array.from(volumeTranslators).join(' / ');
+
+      // Вычисляем PageCount (страницы без обложек)
+      const pageCount = totalImages - coversStats.downloaded;
+
+      // Генерируем ComicInfo.xml
+      const comicInfoXml = this.generateComicInfoXml(
+        metadata,
+        originalMetadata,
+        volume,
+        pageCount,
+        translatorsString,
+        sourceUrl
+      );
+
+      // Добавляем ComicInfo.xml в архив первым файлом
+      if (comicInfoXml) {
+        volumeZip.file('ComicInfo.xml', comicInfoXml);
       }
     }
 

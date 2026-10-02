@@ -1085,4 +1085,172 @@ class BaseFormatter {
       return { success: false, error: e.message };
     }
   }
+
+  // Конвертация ageRestriction.label с сайта в ComicInfo формат
+  convertAgeRatingToComicInfo(ageRestriction) {
+    if (!ageRestriction) return null;
+
+    const rating = ageRestriction.trim();
+    switch (rating) {
+      case '6+':
+        return 'G';
+      case '12+':
+        return 'PG';
+      case '16+':
+        return 'Teen';
+      case '18+':
+        return 'Mature 17+';
+      case '18+ (RX)':
+        return 'Adult 18+';
+      default:
+        return null;
+    }
+  }
+
+  // Определение Manga типа по Типу и Формату с сайта
+  determineMangaType(type, releaseFormat) {
+    // Если в Формате есть "Вебтун" → всегда YesAndWebtoon
+    if (releaseFormat && releaseFormat.includes('Вебтун')) {
+      return 'YesAndWebtoon';
+    }
+
+    // Если Тип = "Манга" и нет "Вебтун" → Yes
+    if (type && type === 'Манга') {
+      return 'Yes';
+    }
+
+    // Во всех остальных случаях → не создавать строку (возвращаем null)
+    return null;
+  }
+
+  // Генерация ComicInfo.xml
+  generateComicInfoXml(
+    editedMetadata,
+    originalMetadata,
+    volumeNum,
+    pageCount,
+    translators,
+    webUrl
+  ) {
+    // Проверка и подготовка данных
+    const series = editedMetadata.titleRu || originalMetadata.titleRu;
+    if (!series) return null; // Series обязателен
+
+    // LocalizedSeries: только непустые отредактированные EN/SRC/ALT через "/"
+    const localizedSeriesParts = [];
+    if (editedMetadata.titleEn) localizedSeriesParts.push(editedMetadata.titleEn);
+    if (editedMetadata.titleOriginal) localizedSeriesParts.push(editedMetadata.titleOriginal);
+    if (editedMetadata.titleAlt) {
+      const altTitles = editedMetadata.titleAlt.split('\n').filter(t => t.trim());
+      localizedSeriesParts.push(...altTitles);
+    }
+    const localizedSeries = localizedSeriesParts.length > 0 ? localizedSeriesParts.join(' / ') : null;
+
+    // Summary: отредактированное описание
+    const summary = editedMetadata.description || null;
+
+    // Genre: только жанры и метки (отредактированные) через запятую
+    const genreParts = [];
+    if (editedMetadata.genres) genreParts.push(editedMetadata.genres);
+    if (editedMetadata.tags) {
+      // Убираем знак # из меток
+      const tagsWithoutHash = editedMetadata.tags.replace(/#/g, '').trim();
+      if (tagsWithoutHash) genreParts.push(tagsWithoutHash);
+    }
+    const genre = genreParts.length > 0 ? genreParts.join(', ') : null;
+
+    // AgeRating: конвертируем из ageRestriction.label с сайта
+    const ageRating = this.convertAgeRatingToComicInfo(originalMetadata.ageRestriction);
+
+    // Year: отредактированный → с сайта
+    const year = editedMetadata.year || originalMetadata.year || null;
+    // Убираем букву "г." если есть
+    const yearClean = year ? year.replace(/г\./g, '').trim() : null;
+
+    // Publisher: отредактированный → с сайта
+    const publisher = editedMetadata.publisher || originalMetadata.publisher || null;
+
+    // Writer: отредактированный → с сайта
+    const writer = editedMetadata.author || originalMetadata.author || null;
+
+    // Penciller: отредактированный → с сайта → дублировать Writer
+    const penciller = editedMetadata.artist || originalMetadata.artist || writer;
+
+    // Manga: определяем по Типу и Формату с сайта
+    const mangaType = this.determineMangaType(originalMetadata.country, originalMetadata.releaseFormat);
+
+    // Генерация XML
+    let xml = '<?xml version="1.0" encoding="utf-8"?>\n';
+    xml += '<ComicInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">\n';
+
+    xml += `  <Series>${this.escapeXml(series)}</Series>\n`;
+
+    if (localizedSeries) {
+      xml += `  <LocalizedSeries>${this.escapeXml(localizedSeries)}</LocalizedSeries>\n`;
+    }
+
+    xml += `  <Number>${volumeNum}</Number>\n`;
+    xml += `  <Volume>${volumeNum}</Volume>\n`;
+
+    if (summary) {
+      xml += `  <Summary>${this.escapeXml(summary)}</Summary>\n`;
+    }
+
+    if (genre) {
+      xml += `  <Genre>${this.escapeXml(genre)}</Genre>\n`;
+    }
+
+    if (webUrl) {
+      // Убираем query параметры из URL
+      const cleanWebUrl = webUrl.split('?')[0];
+      xml += `  <Web>${this.escapeXml(cleanWebUrl)}</Web>\n`;
+    }
+
+    xml += '  <LanguageISO>ru</LanguageISO>\n';
+
+    if (ageRating) {
+      xml += `  <AgeRating>${ageRating}</AgeRating>\n`;
+    }
+
+    if (yearClean) {
+      xml += `  <Year>${this.escapeXml(yearClean)}</Year>\n`;
+    }
+
+    if (publisher) {
+      xml += `  <Publisher>${this.escapeXml(publisher)}</Publisher>\n`;
+    }
+
+    if (translators) {
+      xml += `  <Translator>${this.escapeXml(translators)}</Translator>\n`;
+    }
+
+    if (writer) {
+      xml += `  <Writer>${this.escapeXml(writer)}</Writer>\n`;
+    }
+
+    if (penciller) {
+      xml += `  <Penciller>${this.escapeXml(penciller)}</Penciller>\n`;
+    }
+
+    xml += `  <PageCount>${pageCount}</PageCount>\n`;
+
+    if (mangaType) {
+      xml += `  <Manga>${mangaType}</Manga>\n`;
+    }
+
+    xml += '</ComicInfo>';
+
+    return xml;
+  }
+
+  // Экранирование XML специальных символов
+  escapeXml(text) {
+    if (!text) return '';
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+  }
 }
