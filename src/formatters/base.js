@@ -1155,9 +1155,12 @@ class BaseFormatter {
     const genreParts = [];
     if (editedMetadata.genres) genreParts.push(editedMetadata.genres);
     if (editedMetadata.tags) {
-      // Убираем знак # из меток
+      // Убираем знак # из меток и разделяем по пробелам
       const tagsWithoutHash = editedMetadata.tags.replace(/#/g, '').trim();
-      if (tagsWithoutHash) genreParts.push(tagsWithoutHash);
+      if (tagsWithoutHash) {
+        const tagsArray = tagsWithoutHash.split(/\s+/);
+        genreParts.push(...tagsArray);
+      }
     }
     const genre = genreParts.length > 0 ? genreParts.join(', ') : null;
 
