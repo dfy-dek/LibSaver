@@ -89,6 +89,7 @@ function applySettingsToUI(settings, metadataFields) {
   document.getElementById('disable-toc').checked = settings.disableToc || false;
   document.getElementById('disable-site-menu').checked = settings.disableSiteMenu || false;
   document.getElementById('debug-logging').checked = settings.debugLogging || false;
+  document.getElementById('generate-comicinfo').checked = settings.generateComicInfo !== false;
 
   // Chapters pagination settings
   document.getElementById('enable-pagination').checked = settings.enablePagination === true;
@@ -594,6 +595,7 @@ document.getElementById('btn-save').addEventListener('click', async () => {
     disableToc: document.getElementById('disable-toc').checked,
     disableSiteMenu: document.getElementById('disable-site-menu').checked,
     debugLogging: document.getElementById('debug-logging').checked,
+    generateComicInfo: document.getElementById('generate-comicinfo').checked,
     tocFormat: document.getElementById('toc-format').value,
     customTocFormat: document.getElementById('custom-toc-format').value,
     hideChapterName: document.getElementById('hide-chapter-name').checked,
@@ -650,6 +652,9 @@ const DEFAULT_SETTINGS_BY_GROUP = {
     'enable-pagination': false,
     'initial-chapters': 500,
     'load-more-chapters': 500
+  },
+  cbz: {
+    'generate-comicinfo': true
   },
   txt: {
     'txt-image-marker': 'numbered'

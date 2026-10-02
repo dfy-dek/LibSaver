@@ -393,37 +393,40 @@ class CbzFormatter extends BaseFormatter {
 
     // Генерируем ComicInfo.xml для CBZ формата (манга)
     const format = this.options.format || 'cbz';
+    const generateComicInfo = this.options.generateComicInfo !== false; // По умолчанию включено
 
     if (format === 'cbz' || format === 'zip') {
-      // Собираем переводчиков в строку через "/"
-      const translatorsString = Array.from(volumeTranslators).join(' / ');
+      if (generateComicInfo) {
+        // Собираем переводчиков в строку через "/"
+        const translatorsString = Array.from(volumeTranslators).join(' / ');
 
-      // Вычисляем PageCount (страницы без обложек)
-      const pageCount = totalImages - coversStats.downloaded;
+        // Вычисляем PageCount (страницы без обложек)
+        const pageCount = totalImages - coversStats.downloaded;
 
-      // Вычисляем общее количество томов (количество уникальных томов)
-      let totalVolumes = 0;
-      if (allChapters && allChapters.length > 0) {
-        const volumes = allChapters.map(ch => parseInt(ch.volume) || 0);
-        const uniqueVolumes = [...new Set(volumes)];
-        totalVolumes = uniqueVolumes.length;
-      }
+        // Вычисляем общее количество томов (количество уникальных томов)
+        let totalVolumes = 0;
+        if (allChapters && allChapters.length > 0) {
+          const volumes = allChapters.map(ch => parseInt(ch.volume) || 0);
+          const uniqueVolumes = [...new Set(volumes)];
+          totalVolumes = uniqueVolumes.length;
+        }
 
-      // Генерируем ComicInfo.xml
-      const comicInfoXml = this.generateComicInfoXml(
-        metadata,
-        originalMetadata,
-        volume,
-        pageCount,
-        translatorsString,
-        sourceUrl,
-        coverFiles,
-        totalVolumes
-      );
+        // Генерируем ComicInfo.xml
+        const comicInfoXml = this.generateComicInfoXml(
+          metadata,
+          originalMetadata,
+          volume,
+          pageCount,
+          translatorsString,
+          sourceUrl,
+          coverFiles,
+          totalVolumes
+        );
 
-      // Добавляем ComicInfo.xml в архив первым файлом
-      if (comicInfoXml) {
-        volumeZip.file('ComicInfo.xml', comicInfoXml);
+        // Добавляем ComicInfo.xml в архив первым файлом
+        if (comicInfoXml) {
+          volumeZip.file('ComicInfo.xml', comicInfoXml);
+        }
       }
     }
 

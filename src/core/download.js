@@ -398,7 +398,7 @@ async function startDownload() {
     // Очистка состояния перед новой загрузкой
     resetDownloadState();
 
-    chrome.storage.local.get(['downloadData', 'rateLimit', 'metadataFieldOrder', 'fieldLabels', 'debugLogging', 'disableToc', 'titleData', 'currentSlug', 'speedMode', 'txtImageMarker', 'pdfFont', 'pdfFontSize', 'pdfPageSize', 'pdfLineSpacing', 'pdfParagraphSpacing', 'tocFormat', 'customTocFormat', 'hideChapterName', 'hideVolumeNumber'], async (result) => {
+    chrome.storage.local.get(['downloadData', 'rateLimit', 'metadataFieldOrder', 'fieldLabels', 'debugLogging', 'disableToc', 'titleData', 'currentSlug', 'speedMode', 'txtImageMarker', 'pdfFont', 'pdfFontSize', 'pdfPageSize', 'pdfLineSpacing', 'pdfParagraphSpacing', 'tocFormat', 'customTocFormat', 'hideChapterName', 'hideVolumeNumber', 'generateComicInfo'], async (result) => {
         // Устанавливаем режим детального логирования из настроек
         debugMode = result.debugLogging || false;
 
@@ -541,6 +541,8 @@ async function startDownload() {
                 customTocFormat: options.settings.customTocFormat || '',
                 hideChapterName: options.settings.hideChapterName || false,
                 hideVolumeNumber: options.settings.hideVolumeNumber || false,
+                // Передаем настройку генерации ComicInfo.xml
+                generateComicInfo: result.generateComicInfo !== false,
                 // Передаем siteType для определения типа контента
                 siteType: options.siteType,
                 // Передаем параметры для manga
