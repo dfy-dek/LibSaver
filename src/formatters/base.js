@@ -1130,7 +1130,8 @@ class BaseFormatter {
     volumeNum,
     pageCount,
     translators,
-    webUrl
+    webUrl,
+    coverFiles = []
   ) {
     // Проверка и подготовка данных
     const series = editedMetadata.titleRu || originalMetadata.titleRu;
@@ -1236,6 +1237,16 @@ class BaseFormatter {
 
     if (mangaType) {
       xml += `  <Manga>${mangaType}</Manga>\n`;
+    }
+
+    // Добавляем блок Pages с обложками, если они есть
+    if (coverFiles && coverFiles.length > 0) {
+      xml += '  <Pages>\n';
+      coverFiles.forEach((coverFile, index) => {
+        const pageType = index === 0 ? 'Cover' : 'AlternativeCover';
+        xml += `    <Page Key="${this.escapeXml(coverFile)}" Image="${index}" Type="${pageType}" />\n`;
+      });
+      xml += '  </Pages>\n';
     }
 
     xml += '</ComicInfo>';

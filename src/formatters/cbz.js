@@ -138,8 +138,10 @@ class CbzFormatter extends BaseFormatter {
     const volumeTranslators = new Set();
     
     // Скачиваем обложки только для первого тома
+    let coverFiles = []; // Список имён файлов загруженных обложек для ComicInfo.xml
     if (isFirstVolume) {
       coversStats = await this.processCovers(volumeZip);
+      coverFiles = coversStats.coverFiles || [];
       totalImages += coversStats.downloaded;
       imagesFailed += coversStats.failed;
     }
@@ -400,7 +402,8 @@ class CbzFormatter extends BaseFormatter {
         volume,
         pageCount,
         translatorsString,
-        sourceUrl
+        sourceUrl,
+        coverFiles
       );
 
       // Добавляем ComicInfo.xml в архив первым файлом
@@ -450,17 +453,18 @@ class CbzFormatter extends BaseFormatter {
     const coverQuality = this.options.coverQuality || 'ORIGINAL';
 
     if (coverQuality === 'NONE') {
-      return { downloaded: 0, failed: 0, total: 0 };
+      return { downloaded: 0, failed: 0, total: 0, coverFiles: [] };
     }
 
     const allCovers = this.options.allCovers ? this.options.allCovers : [metadata.cover || this.options.originalCover || ''];
 
     if (allCovers.length === 0) {
-      return { downloaded: 0, failed: 0, total: 0 };
+      return { downloaded: 0, failed: 0, total: 0, coverFiles: [] };
     }
 
     let coversDownloaded = 0;
     let coversFailed = 0;
+    let coverFiles = []; // Список имён файлов загруженных обложек
 
     for (let i = 0; i < allCovers.length; i++) {
       const coverItem = allCovers[i];
@@ -490,8 +494,11 @@ class CbzFormatter extends BaseFormatter {
         if (coverBlob) {
           const imageFormat = this.options.imageFormat || 'original';
           const coverExtension = this.getImageExtension(coverBlob, imageFormat);
-          const coverFileName = allCovers.length > 1 ? `cover-${i + 1}${coverExtension}` : `000_cover${coverExtension}`;
+          const coverFileName = `!cover_${String(i).padStart(3, '0')}${coverExtension}`;
           volumeZip.file(coverFileName, coverBlob);
+
+          // Добавляем в список загруженных обложек
+          coverFiles.push(coverFileName);
 
           coversDownloaded++;
           if (window.incrementTotalCovers) {
@@ -509,13 +516,12 @@ class CbzFormatter extends BaseFormatter {
         }
       }
     }
-    
-    return { downloaded: coversDownloaded, failed: coversFailed, total: allCovers.length };
+
+    return { downloaded: coversDownloaded, failed: coversFailed, total: allCovers.length, coverFiles };
   }
 
   generatePageFilename(chapter, page, extension) {
-    // Формируем имя файла: volXXX_chXXXX_Y_pageZZZZ.расширение
-    const volume = String(chapter.volume || '1').padStart(3, '0');
+    // Формируем имя файла: chXXXX_YY_ZZZ.расширение
     const chapterNum = chapter.number || '0';
 
     // Разбираем номер главы на целую и дробную части
@@ -524,8 +530,8 @@ class CbzFormatter extends BaseFormatter {
       const parts = String(chapterNum).split('.');
       chapterWhole = parts[0];
       chapterFraction = parts[1] || '0';
-      // Дробная часть - одна цифра без ведущих нулей
-      chapterFraction = chapterFraction.substring(0, 1);
+      // Дробная часть - до 2 цифр
+      chapterFraction = chapterFraction.substring(0, 2);
     } else {
       chapterWhole = chapterNum;
       chapterFraction = '0';
@@ -534,9 +540,13 @@ class CbzFormatter extends BaseFormatter {
     // Целая часть главы до 4 цифр
     chapterWhole = String(chapterWhole).padStart(4, '0');
 
-    const pageNum = String(page.slug).padStart(4, '0');
+    // Дробная часть до 2 цифр
+    chapterFraction = String(chapterFraction).padStart(2, '0');
 
-    return `vol${volume}_ch${chapterWhole}_${chapterFraction}_page${pageNum}${extension}`;
+    // Номер страницы до 3 цифр
+    const pageNum = String(page.slug).padStart(3, '0');
+
+    return `ch${chapterWhole}_${chapterFraction}_${pageNum}${extension}`;
   }
   
   getExtension() {
