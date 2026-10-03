@@ -382,6 +382,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     'disableToc',
     'disableSiteMenu',
     'debugLogging',
+    'generateComicInfo',
     'tocFormat',
     'customTocFormat',
     'hideChapterName',
