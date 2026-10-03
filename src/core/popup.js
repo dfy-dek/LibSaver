@@ -18,7 +18,38 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'showToast') {
     showToast(request.message, request.type);
   }
+  if (request.action === 'checkWindowOpen') {
+    sendResponse({ windowOpen: true, windowType: 'popup' });
+  }
 });
+
+// Очищаем застрявшие значения при загрузке popup
+chrome.storage.local.remove('currentOpenWindow');
+
+// Маппинг типов окон в понятные названия
+const windowNames = {
+  'settings': 'Настройки',
+  'prepare': 'Окно подготовки',
+  'chapters': 'Редактор оглавления',
+  'metadata': 'Редактор метаданных',
+  'covers': 'Редактор обложек'
+};
+
+// Функция для проверки открытого окна перед открытием нового
+async function canOpenWindow(windowType) {
+  const result = await chrome.storage.local.get(['currentOpenWindow']);
+  if (result.currentOpenWindow) {
+    // Если открываем окно того же типа - разрешаем (для фокусировки)
+    if (result.currentOpenWindow === windowType) {
+      return true;
+    }
+    // Если другой тип - блокируем
+    const windowName = windowNames[result.currentOpenWindow] || result.currentOpenWindow;
+    showToast(`Закройте: ${windowName}`, 'error');
+    return false;
+  }
+  return true;
+}
 
 // Глобальные переменные для настроек
 let tocFormat = 'default';
@@ -549,11 +580,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // Функция для открытия popup окна
-function openPopupWindow(url, withTargetTabId = false) {
+async function openPopupWindow(url, withTargetTabId = false) {
+  // Определяем тип окна по URL
+  let windowType = '';
+  if (url.includes('settings.html')) windowType = 'settings';
+  else if (url.includes('prepare.html')) windowType = 'prepare';
+  else if (url.includes('chapters.html')) windowType = 'chapters';
+  else if (url.includes('metadata.html')) windowType = 'metadata';
+  else if (url.includes('covers.html')) windowType = 'covers';
+
+  // Проверяем, можно ли открыть окно
+  if (!await canOpenWindow(windowType)) {
+    return; // Нельзя открыть - уже показан toast
+  }
+
   // Сначала проверяем, есть ли уже открытое окно с этим URL
   chrome.windows.getAll({ populate: true }, (windows) => {
     let existingWindow = null;
-    
+
     for (const win of windows) {
       for (const tab of win.tabs) {
         if (tab.url && tab.url.includes(url)) {
@@ -563,7 +607,7 @@ function openPopupWindow(url, withTargetTabId = false) {
       }
       if (existingWindow) break;
     }
-    
+
     if (existingWindow) {
       // Фокусируемся на существующем окне
       chrome.windows.update(existingWindow.id, { focused: true });
@@ -572,9 +616,9 @@ function openPopupWindow(url, withTargetTabId = false) {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         const targetTabId = tabs?.[0]?.id ?? null;
         const sourceUrl = tabs?.[0]?.url ?? null;
-        
+
         const storageData = { currentSlug, targetTabId, sourceUrl };
-        
+
         chrome.storage.local.set(storageData, () => {
           const width = 1024;
           const height = 768;

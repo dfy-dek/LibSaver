@@ -166,9 +166,17 @@ function populateTranslators() {
 
 // Загружаем и применяем тему
 document.addEventListener('DOMContentLoaded', async () => {
+  // Регистрируем окно редактора глав
+  await chrome.storage.local.set({ currentOpenWindow: 'chapters' });
+
+  // Очищаем регистрацию при закрытии
+  window.addEventListener('beforeunload', async () => {
+    await chrome.storage.local.remove('currentOpenWindow');
+  });
+
   // Загружаем и применяем тему
   await loadAndApplyTheme();
-  
+
   // Применяем акцентный цвет по сайту (из storage)
   const result = await chrome.storage.local.get(['sourceUrl', 'titleData', 'originalTitleData', 'currentSlug', 'tocFormat', 'customTocFormat', 'hideChapterName', 'hideVolumeNumber', 'enablePagination', 'initialChapters', 'loadMoreChapters']);
   const sourceUrl = result.sourceUrl;

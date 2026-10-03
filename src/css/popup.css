@@ -266,6 +266,7 @@ body {
   transform: translateX(100%);
   opacity: 0;
   transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+  white-space: nowrap;
 }
 
 .toast.show {

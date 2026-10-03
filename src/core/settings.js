@@ -227,9 +227,17 @@ function updatePaginationSettingsVisibility() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Регистрируем окно настроек
+  await chrome.storage.local.set({ currentOpenWindow: 'settings' });
+
+  // Очищаем регистрацию при закрытии
+  window.addEventListener('beforeunload', async () => {
+    await chrome.storage.local.remove('currentOpenWindow');
+  });
+
   // Загружаем и применяем тему
   const theme = await loadAndApplyTheme();
-  
+
   // Применяем акцентный цвет по сайту (из storage)
   const result = await chrome.storage.local.get(['sourceUrl']);
   const sourceUrl = result.sourceUrl;

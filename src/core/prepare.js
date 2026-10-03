@@ -175,6 +175,14 @@ function setupTippyPreview(preview, imageUrl) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Регистрируем окно подготовки
+  await chrome.storage.local.set({ currentOpenWindow: 'prepare' });
+
+  // Очищаем регистрацию при закрытии
+  window.addEventListener('beforeunload', async () => {
+    await chrome.storage.local.remove('currentOpenWindow');
+  });
+
   // Применяем акцентный цвет по сайту (используем функцию из theme.js)
   const result = await chrome.storage.local.get(['sourceUrl']);
   const sourceUrl = result.sourceUrl;

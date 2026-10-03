@@ -13,9 +13,17 @@ setupThemeMessageListener();
 
 // Загрузка метаданных при открытии страницы
 document.addEventListener('DOMContentLoaded', async () => {
+  // Регистрируем окно редактора метаданных
+  await chrome.storage.local.set({ currentOpenWindow: 'metadata' });
+
+  // Очищаем регистрацию при закрытии
+  window.addEventListener('beforeunload', async () => {
+    await chrome.storage.local.remove('currentOpenWindow');
+  });
+
   // Загружаем и применяем тему
   await loadAndApplyTheme();
-  
+
   // Применяем акцентный цвет по сайту (из storage)
   const result = await chrome.storage.local.get(['sourceUrl']);
   const sourceUrl = result.sourceUrl;
