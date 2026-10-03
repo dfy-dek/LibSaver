@@ -23,9 +23,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-// Очищаем застрявшие значения при загрузке popup
-chrome.storage.local.remove('currentOpenWindow');
-
 // Маппинг типов окон в понятные названия
 const windowNames = {
   'settings': 'Настройки',
@@ -34,6 +31,45 @@ const windowNames = {
   'metadata': 'Редактор метаданных',
   'covers': 'Редактор обложек'
 };
+
+// Функция для сканирования реально открытых окон и обновления storage
+async function syncOpenWindows() {
+  const windows = await chrome.windows.getAll({ populate: true });
+  let foundWindow = null;
+
+  for (const win of windows) {
+    for (const tab of win.tabs) {
+      if (tab.url) {
+        if (tab.url.includes('settings.html')) {
+          foundWindow = 'settings';
+          break;
+        } else if (tab.url.includes('prepare.html')) {
+          foundWindow = 'prepare';
+          break;
+        } else if (tab.url.includes('chapters.html')) {
+          foundWindow = 'chapters';
+          break;
+        } else if (tab.url.includes('metadata.html')) {
+          foundWindow = 'metadata';
+          break;
+        } else if (tab.url.includes('covers.html')) {
+          foundWindow = 'covers';
+          break;
+        }
+      }
+    }
+    if (foundWindow) break;
+  }
+
+  if (foundWindow) {
+    await chrome.storage.local.set({ currentOpenWindow: foundWindow });
+  } else {
+    await chrome.storage.local.remove('currentOpenWindow');
+  }
+}
+
+// Синхронизируем при загрузке popup
+syncOpenWindows();
 
 // Функция для проверки открытого окна перед открытием нового
 async function canOpenWindow(windowType) {
