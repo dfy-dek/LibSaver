@@ -21,16 +21,16 @@
             { name: 'HentaiLIB', url: 'https://hentailib.me', color: '4', svgFile: 'HentaiLIB.svg' },
             { name: 'SlashLIB', url: 'https://v2.shlib.life', color: '2', svgFile: 'SlashLIB.svg' },
             { name: 'RanobeLIB', url: 'https://ranobelib.me', color: '3', svgFile: 'RanobeLIB.svg' },
-            { name: 'AnimeLIB', url: 'https://v5.animelib.org', color: '5', svgFile: 'AnimeLIB.svg' }
+            { name: 'AnimeLIB', url: 'https://animelib.org', color: '5', svgFile: 'AnimeLIB.svg' }
         ];
 
         // Определить текущий сайт
         function getCurrentSite() {
             const hostname = window.location.hostname;
-            if (hostname.includes('mangalib.me')) return 'mangalib';
-            if (hostname.includes('hentailib.me')) return 'hentailib';
-            if (hostname.includes('ranobelib.me')) return 'ranobelib';
-            if (hostname.includes('animelib.org')) return 'animelib';
+            if (hostname.includes('mangalib.me') || hostname.includes('mangalib.org')) return 'mangalib';
+            if (hostname.includes('hentailib.me') || hostname.includes('hentailib.org')) return 'hentailib';
+            if (hostname.includes('ranobelib.me') || hostname.includes('novelslib.me')) return 'ranobelib';
+            if (hostname.includes('animelib.org') || hostname.includes('anilib.me')) return 'animelib';
             if (hostname.includes('shlib.life')) return 'slashlib';
             return 'ranobelib';
         }
@@ -254,7 +254,13 @@
                     const currentHostname = window.location.hostname;
                     
                     // Для animelib.org и anilib.me исключаем все поддомены
-                    if (siteHostname === 'v5.animelib.org' && (currentHostname.includes('animelib.org') || currentHostname.includes('anilib.me'))) continue;
+                    if (siteHostname === 'animelib.org' && (currentHostname.includes('animelib.org') || currentHostname.includes('anilib.me'))) continue;
+                    // Для mangalib.me и mangalib.org исключаем все домены
+                    if (siteHostname === 'mangalib.me' && (currentHostname.includes('mangalib.me') || currentHostname.includes('mangalib.org'))) continue;
+                    // Для ranobelib.me и novelslib.me исключаем все домены
+                    if (siteHostname === 'ranobelib.me' && (currentHostname.includes('ranobelib.me') || currentHostname.includes('novelslib.me'))) continue;
+                    // Для hentailib.me и hentailib.org исключаем все домены
+                    if (siteHostname === 'hentailib.me' && (currentHostname.includes('hentailib.me') || currentHostname.includes('hentailib.org'))) continue;
                     // Для остальных сайтов - обычная проверка
                     if (currentHostname.includes(siteHostname)) continue;
                     

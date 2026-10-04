@@ -30,7 +30,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://ranobelib.me/*", "https://mangalib.me/*", "https://hentailib.me/*", "https://v2.shlib.life/*", "https://animelib.org/*", "https://anilib.me/*", "https://v2.animelib.org/*", "https://v5.animelib.org/*"],
+      "matches": ["https://ranobelib.me/*", "https://mangalib.me/*", "https://mangalib.org/*", "https://v1.novelslib.me/*", "https://hentailib.me/*", "https://v2.hentailib.org/*", "https://v2.shlib.life/*", "https://animelib.org/*", "https://anilib.me/*", "https://v2.animelib.org/*", "https://v5.animelib.org/*"],
       "js": ["content/SiteMenuRestorer.js"],
       "run_at": "document_idle"
     }

@@ -2,32 +2,33 @@
 
 // Функция для определения сайта и API endpoint (глобальная для popup/prepare)
 function getSiteConfig(url) {
-  if (url.includes('ranobelib.me')) {
+  const hostname = new URL(url).hostname;
+  if (url.includes('ranobelib.me') || url.includes('novelslib.me')) {
     return {
       siteType: 'ranobelib',
       apiDomain: 'https://api.cdnlibs.org',
       slugPattern: /\/ru\/book\/([^-]+)(--[^?]+)?/,
       siteId: '3',
       serviceName: 'ranobelib',
-      referer: 'https://ranobelib.me/'
+      referer: `https://${hostname}/`
     };
-  } else if (url.includes('mangalib.me')) {
+  } else if (url.includes('mangalib.me') || url.includes('mangalib.org')) {
     return {
       siteType: 'mangalib',
       apiDomain: 'https://api.cdnlibs.org',
       slugPattern: /\/ru\/manga\/([^-]+)(--[^?]+)?/,
       siteId: '1',
       serviceName: 'mangalib',
-      referer: 'https://mangalib.me/'
+      referer: `https://${hostname}/`
     };
-  } else if (url.includes('hentailib.me')) {
+  } else if (url.includes('hentailib.me') || url.includes('hentailib.org')) {
     return {
       siteType: 'hentailib',
       apiDomain: 'https://hapi.hentaicdn.org',
       slugPattern: /\/ru\/manga\/([^-]+)(--[^?]+)?/,
       siteId: '4',
       serviceName: 'hentailib',
-      referer: 'https://hentailib.me/'
+      referer: `https://${hostname}/`
     };
   } else if (url.includes('v2.shlib.life') || url.includes('shlib.life')) {
     return {
@@ -36,7 +37,7 @@ function getSiteConfig(url) {
       slugPattern: /\/ru\/manga\/([^-]+)(--[^?]+)?/,
       siteId: '2',
       serviceName: 'shlib',
-      referer: 'https://v2.shlib.life/'
+      referer: `https://${hostname}/`
     };
   } else if (url.includes('animelib.org') || url.includes('anilib.me')) {
     return {
@@ -45,7 +46,7 @@ function getSiteConfig(url) {
       slugPattern: /\/ru\/anime\/([^-]+)(--[^?]+)?/,
       siteId: '5',
       serviceName: 'animelib',
-      referer: 'https://animelib.org/'
+      referer: `https://${hostname}/`
     };
   }
   return null;
@@ -95,32 +96,33 @@ async function loadChapters(tabId) {
       target: { tabId: tabId },
       func: async () => {
         const url = window.location.href;
-        
+
         // Определяем конфигурацию сайта
         function getSiteConfig(url) {
-          if (url.includes('ranobelib.me')) {
+          const hostname = new URL(url).hostname;
+          if (url.includes('ranobelib.me') || url.includes('novelslib.me')) {
             return {
               apiDomain: 'https://api.cdnlibs.org',
               slugPattern: /\/ru\/book\/([^-]+)(--[^?]+)?/,
               siteId: '3',
               serviceName: 'ranobelib',
-              referer: 'https://ranobelib.me/'
+              referer: `https://${hostname}/`
             };
-          } else if (url.includes('mangalib.me')) {
+          } else if (url.includes('mangalib.me') || url.includes('mangalib.org')) {
             return {
               apiDomain: 'https://api.cdnlibs.org',
               slugPattern: /\/ru\/manga\/([^-]+)(--[^?]+)?/,
               siteId: '1',
               serviceName: 'mangalib',
-              referer: 'https://mangalib.me/'
+              referer: `https://${hostname}/`
             };
-          } else if (url.includes('hentailib.me')) {
+          } else if (url.includes('hentailib.me') || url.includes('hentailib.org')) {
             return {
               apiDomain: 'https://hapi.hentaicdn.org',
               slugPattern: /\/ru\/manga\/([^-]+)(--[^?]+)?/,
               siteId: '4',
               serviceName: 'hentailib',
-              referer: 'https://hentailib.me/'
+              referer: `https://${hostname}/`
             };
           } else if (url.includes('v2.shlib.life') || url.includes('shlib.life')) {
             return {
@@ -128,15 +130,15 @@ async function loadChapters(tabId) {
               slugPattern: /\/ru\/manga\/([^-]+)(--[^?]+)?/,
               siteId: '2',
               serviceName: 'shlib',
-              referer: 'https://v2.shlib.life/'
+              referer: `https://${hostname}/`
             };
-          } else if (url.includes('v5.animelib.org')) {
+          } else if (url.includes('animelib.org') || url.includes('anilib.me')) {
             return {
               apiDomain: 'https://hapi.hentaicdn.org',
               slugPattern: /\/ru\/anime\/([^-]+)(--[^?]+)?/,
               siteId: '5',
               serviceName: 'animelib',
-              referer: 'https://v5.animelib.org/'
+              referer: `https://${hostname}/`
             };
           }
           return null;
@@ -289,32 +291,33 @@ async function loadMetadata(tabId) {
       target: { tabId: tabId },
       func: () => {
         const url = window.location.href;
-        
+
         // Определяем конфигурацию сайта
         function getSiteConfig(url) {
-          if (url.includes('ranobelib.me')) {
+          const hostname = new URL(url).hostname;
+          if (url.includes('ranobelib.me') || url.includes('novelslib.me')) {
             return {
               apiDomain: 'https://api.cdnlibs.org',
               slugPattern: /\/ru\/book\/([^-]+)(--[^?]+)?/,
               siteId: '3',
               serviceName: 'ranobelib',
-              referer: 'https://ranobelib.me/'
+              referer: `https://${hostname}/`
             };
-          } else if (url.includes('mangalib.me')) {
+          } else if (url.includes('mangalib.me') || url.includes('mangalib.org')) {
             return {
               apiDomain: 'https://api.cdnlibs.org',
               slugPattern: /\/ru\/manga\/([^-]+)(--[^?]+)?/,
               siteId: '1',
               serviceName: 'mangalib',
-              referer: 'https://mangalib.me/'
+              referer: `https://${hostname}/`
             };
-          } else if (url.includes('hentailib.me')) {
+          } else if (url.includes('hentailib.me') || url.includes('hentailib.org')) {
             return {
               apiDomain: 'https://hapi.hentaicdn.org',
               slugPattern: /\/ru\/manga\/([^-]+)(--[^?]+)?/,
               siteId: '4',
               serviceName: 'hentailib',
-              referer: 'https://hentailib.me/'
+              referer: `https://${hostname}/`
             };
           } else if (url.includes('v2.shlib.life') || url.includes('shlib.life')) {
             return {
@@ -322,15 +325,15 @@ async function loadMetadata(tabId) {
               slugPattern: /\/ru\/manga\/([^-]+)(--[^?]+)?/,
               siteId: '2',
               serviceName: 'shlib',
-              referer: 'https://v2.shlib.life/'
+              referer: `https://${hostname}/`
             };
-          } else if (url.includes('v5.animelib.org')) {
+          } else if (url.includes('animelib.org') || url.includes('anilib.me')) {
             return {
               apiDomain: 'https://hapi.hentaicdn.org',
               slugPattern: /\/ru\/anime\/([^-]+)(--[^?]+)?/,
               siteId: '5',
               serviceName: 'animelib',
-              referer: 'https://v5.animelib.org/'
+              referer: `https://${hostname}/`
             };
           }
           return null;
@@ -523,32 +526,33 @@ async function loadCovers(tabId, slug) {
       target: { tabId: tabId },
       func: async (slug) => {
         const url = window.location.href;
-        
+
         // Определяем конфигурацию сайта
         function getSiteConfig(url) {
-          if (url.includes('ranobelib.me')) {
+          const hostname = new URL(url).hostname;
+          if (url.includes('ranobelib.me') || url.includes('novelslib.me')) {
             return {
               apiDomain: 'https://api.cdnlibs.org',
               slugPattern: /\/ru\/book\/([^-]+)(--[^?]+)?/,
               siteId: '3',
               serviceName: 'ranobelib',
-              referer: 'https://ranobelib.me/'
+              referer: `https://${hostname}/`
             };
-          } else if (url.includes('mangalib.me')) {
+          } else if (url.includes('mangalib.me') || url.includes('mangalib.org')) {
             return {
               apiDomain: 'https://api.cdnlibs.org',
               slugPattern: /\/ru\/manga\/([^-]+)(--[^?]+)?/,
               siteId: '1',
               serviceName: 'mangalib',
-              referer: 'https://mangalib.me/'
+              referer: `https://${hostname}/`
             };
-          } else if (url.includes('hentailib.me')) {
+          } else if (url.includes('hentailib.me') || url.includes('hentailib.org')) {
             return {
               apiDomain: 'https://hapi.hentaicdn.org',
               slugPattern: /\/ru\/manga\/([^-]+)(--[^?]+)?/,
               siteId: '4',
               serviceName: 'hentailib',
-              referer: 'https://hentailib.me/'
+              referer: `https://${hostname}/`
             };
           } else if (url.includes('v2.shlib.life') || url.includes('shlib.life')) {
             return {
@@ -556,15 +560,15 @@ async function loadCovers(tabId, slug) {
               slugPattern: /\/ru\/manga\/([^-]+)(--[^?]+)?/,
               siteId: '2',
               serviceName: 'shlib',
-              referer: 'https://v2.shlib.life/'
+              referer: `https://${hostname}/`
             };
-          } else if (url.includes('v5.animelib.org')) {
+          } else if (url.includes('animelib.org') || url.includes('anilib.me')) {
             return {
               apiDomain: 'https://hapi.hentaicdn.org',
               slugPattern: /\/ru\/anime\/([^-]+)(--[^?]+)?/,
               siteId: '5',
               serviceName: 'animelib',
-              referer: 'https://v5.animelib.org/'
+              referer: `https://${hostname}/`
             };
           }
           return null;
@@ -716,24 +720,25 @@ async function loadChapterPages(tabId, chapterId, slug, imageServer = 'normal') 
       target: { tabId: tabId },
       func: async (chapterId, slug, imageServer) => {
         const url = window.location.href;
-        
+
         // Определяем конфигурацию сайта
         function getSiteConfig(url) {
-          if (url.includes('mangalib.me')) {
+          const hostname = new URL(url).hostname;
+          if (url.includes('mangalib.me') || url.includes('mangalib.org')) {
             return {
               apiDomain: 'https://api.cdnlibs.org',
               siteId: '1',
               serviceName: 'mangalib',
-              referer: 'https://mangalib.me/',
+              referer: `https://${hostname}/`,
               imageServerNormal: 'https://img2.imglib.info',
               imageServerCompressed: 'https://img3.cdnlibs.org'
             };
-          } else if (url.includes('hentailib.me')) {
+          } else if (url.includes('hentailib.me') || url.includes('hentailib.org')) {
             return {
               apiDomain: 'https://hapi.hentaicdn.org',
               siteId: '4',
               serviceName: 'hentailib',
-              referer: 'https://hentailib.me/',
+              referer: `https://${hostname}/`,
               imageServerNormal: 'https://img2h.hentaicdn.org',
               imageServerCompressed: 'https://img3h.hentaicdn.org'
             };
@@ -742,7 +747,7 @@ async function loadChapterPages(tabId, chapterId, slug, imageServer = 'normal') 
               apiDomain: 'https://hapi.hentaicdn.org',
               siteId: '4',
               serviceName: 'shlib',
-              referer: 'https://v2.shlib.life/',
+              referer: `https://${hostname}/`,
               imageServerNormal: 'https://img2h.hentaicdn.org',
               imageServerCompressed: 'https://img3h.hentaicdn.org'
             };

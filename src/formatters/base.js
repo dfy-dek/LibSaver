@@ -881,21 +881,22 @@ class BaseFormatter {
 
           // Определяем конфигурацию сайта
           function getSiteConfig(url) {
-            if (url.includes('mangalib.me')) {
+            const hostname = new URL(url).hostname;
+            if (url.includes('mangalib.me') || url.includes('mangalib.org')) {
               return {
                 apiDomain: 'https://api.cdnlibs.org',
                 slugPattern: /\/ru\/manga\/([^-]+)(--[^?]+)?/,
                 siteId: '1',
                 serviceName: 'mangalib',
-                referer: 'https://mangalib.me/'
+                referer: `https://${hostname}/`
               };
-            } else if (url.includes('hentailib.me')) {
+            } else if (url.includes('hentailib.me') || url.includes('hentailib.org')) {
               return {
                 apiDomain: 'https://hapi.hentaicdn.org',
                 slugPattern: /\/ru\/manga\/([^-]+)(--[^?]+)?/,
                 siteId: '4',
                 serviceName: 'hentailib',
-                referer: 'https://hentailib.me/'
+                referer: `https://${hostname}/`
               };
             } else if (url.includes('v2.shlib.life') || url.includes('shlib.life')) {
               return {
@@ -903,15 +904,15 @@ class BaseFormatter {
                 slugPattern: /\/ru\/manga\/([^-]+)(--[^?]+)?/,
                 siteId: '2',
                 serviceName: 'shlib',
-                referer: 'https://v2.shlib.life/'
+                referer: `https://${hostname}/`
               };
-            } else if (url.includes('v5.animelib.org')) {
+            } else if (url.includes('animelib.org') || url.includes('anilib.me')) {
               return {
                 apiDomain: 'https://hapi.hentaicdn.org',
                 slugPattern: /\/ru\/anime\/([^-]+)(--[^?]+)?/,
                 siteId: '5',
                 serviceName: 'animelib',
-                referer: 'https://v5.animelib.org/'
+                referer: `https://${hostname}/`
               };
             }
             return null;

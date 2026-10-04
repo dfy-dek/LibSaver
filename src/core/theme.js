@@ -95,8 +95,10 @@ function applySiteAccent(url) {
     }
 
     const isSupportedSite = url.includes('ranobelib.me') ||
+                           url.includes('novelslib.me') ||
                            url.includes('mangalib.me') ||
-                           url.includes('hentailib.me') ||
+                           url.includes('mangalib.org') ||
+                           url.includes('hentailib.me') || url.includes('hentailib.org') ||
                            url.includes('v2.shlib.life') ||
                            url.includes('shlib.life') ||
                            url.includes('animelib.org') ||
@@ -107,7 +109,7 @@ function applySiteAccent(url) {
 
     if (isSupportedSite) {
       // Для поддерживаемых сайтов используем прямые значения цветов
-      if (url.includes('ranobelib.me')) {
+      if (url.includes('ranobelib.me') || url.includes('novelslib.me')) {
         if (isDark) {
           root.style.setProperty('--accent-color', '#1565c0');
           root.style.setProperty('--accent-hover', '#145cae');
@@ -119,7 +121,7 @@ function applySiteAccent(url) {
           root.style.setProperty('--accent-soft', 'rgba(33, 150, 243, 0.2)');
           root.style.setProperty('--checkbox-color', '#2196f3');
         }
-      } else if (url.includes('mangalib.me')) {
+      } else if (url.includes('mangalib.me') || url.includes('mangalib.org')) {
         if (isDark) {
           root.style.setProperty('--accent-color', '#ef6c00');
           root.style.setProperty('--accent-hover', '#d86201');
@@ -131,7 +133,7 @@ function applySiteAccent(url) {
           root.style.setProperty('--accent-soft', 'rgba(255, 145, 0, 0.2)');
           root.style.setProperty('--checkbox-color', '#ff9100');
         }
-      } else if (url.includes('hentailib.me')) {
+      } else if (url.includes('hentailib.me') || url.includes('hentailib.org')) {
         if (isDark) {
           root.style.setProperty('--accent-color', '#b71c1c');
           root.style.setProperty('--accent-hover', '#a61a1a');

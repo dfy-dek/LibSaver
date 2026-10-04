@@ -419,9 +419,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Применяем акцентный цвет по сайту
     window.applySiteAccent(url);
     // Проверка, что мы находимся на поддерживаемом сайте
-    const isRanobeLib = url.includes('ranobelib.me');
-    const isMangaLib = url.includes('mangalib.me');
-    const isHentaiLib = url.includes('hentailib.me');
+    const isRanobeLib = url.includes('ranobelib.me') || url.includes('novelslib.me');
+    const isMangaLib = url.includes('mangalib.me') || url.includes('mangalib.org');
+    const isHentaiLib = url.includes('hentailib.me') || url.includes('hentailib.org');
     const isShLib = url.includes('v2.shlib.life') || url.includes('shlib.life');
     const isAnimeLib = url.includes('animelib.org') || url.includes('anilib.me');
     const isSupportedSite = isRanobeLib || isMangaLib || isHentaiLib || isShLib || isAnimeLib;
@@ -915,7 +915,7 @@ document.getElementById('btn-ranobelib').addEventListener('click', async () => {
 });
 
 document.getElementById('btn-animelib').addEventListener('click', async () => {
-  await chrome.tabs.create({ url: 'https://v5.animelib.org' });
+  await chrome.tabs.create({ url: 'https://animelib.org' });
 });
 
 // Кнопка настроек
