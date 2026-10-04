@@ -3,9 +3,9 @@
 (function() {
     'use strict';
 
-    // Проверяем настройку отключения
-    chrome.storage.local.get(['disableSiteMenu'], function(result) {
-        if (result.disableSiteMenu === true) {
+    // Проверяем настройку включения
+    chrome.storage.local.get(['enableSiteMenu'], function(result) {
+        if (result.enableSiteMenu === false) {
             return; // Скрипт отключен
         }
         initSiteMenuRestorer();

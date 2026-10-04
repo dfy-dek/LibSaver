@@ -69,7 +69,7 @@ function applySettingsToUI(settings) {
   document.getElementById('jpeg-quality-value').textContent = settings.jpegQuality || 1.0;
   document.getElementById('image-format').value = settings.imageFormat || 'original';
   document.getElementById('disable-toc').checked = settings.disableToc || false;
-  document.getElementById('disable-site-menu').checked = settings.disableSiteMenu || false;
+  document.getElementById('enable-site-menu').checked = settings.enableSiteMenu !== false;
   document.getElementById('debug-logging').checked = settings.debugLogging || false;
   document.getElementById('generate-comicinfo').checked = settings.generateComicInfo !== false;
 
@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     'jpegQuality',
     'imageFormat',
     'disableToc',
-    'disableSiteMenu',
+    'enableSiteMenu',
     'debugLogging',
     'generateComicInfo',
     'tocFormat',
@@ -566,7 +566,7 @@ document.getElementById('btn-save').addEventListener('click', async () => {
     jpegQuality: parseFloat(document.getElementById('jpeg-quality').value),
     imageFormat: document.getElementById('image-format').value,
     disableToc: document.getElementById('disable-toc').checked,
-    disableSiteMenu: document.getElementById('disable-site-menu').checked,
+    enableSiteMenu: document.getElementById('enable-site-menu').checked,
     debugLogging: document.getElementById('debug-logging').checked,
     generateComicInfo: document.getElementById('generate-comicinfo').checked,
     tocFormat: document.getElementById('toc-format').value,
@@ -808,7 +808,7 @@ document.getElementById('btn-reset').addEventListener('click', async () => {
     enableCoverEditor: true,
     enableChaptersEditor: true,
     disableToc: false,
-    disableSiteMenu: false,
+    enableSiteMenu: true,
     debugLogging: false,
     tocFormat: 'default',
     customTocFormat: '',
