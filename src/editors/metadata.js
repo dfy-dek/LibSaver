@@ -95,7 +95,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   // Инициализируем кнопки переименования полей
   initFieldRenameButtons();
-  
+
+  // Инициализируем кнопки видимости полей
+  initFieldVisibilityButtons();
+
   // Применяем сохранённые названия полей
   applyFieldLabels();
 });
@@ -180,12 +183,14 @@ function applyFieldStates() {
   const fields = document.querySelectorAll('.field');
   fields.forEach(field => {
     const fieldId = field.getAttribute('data-field');
-    
+
     if (metadataFields[fieldId] === false) {
       field.classList.add('disabled');
     } else {
       field.classList.remove('disabled');
     }
+
+    // Иконка power-off всегда одинаковая, не меняем её
   });
 }
 
@@ -624,6 +629,31 @@ function initFieldRenameButtons() {
       
       label.addEventListener('blur', handleBlur);
       label.addEventListener('keydown', handleKeydown);
+    });
+  });
+}
+
+// Инициализация кнопок видимости полей
+function initFieldVisibilityButtons() {
+  const visibilityButtons = document.querySelectorAll('.field-visibility-btn');
+  visibilityButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      const fieldId = button.getAttribute('data-field');
+      const field = button.closest('.field');
+
+      // Переключаем состояние
+      metadataFields[fieldId] = !metadataFields[fieldId];
+
+      // Обновляем UI
+      if (metadataFields[fieldId] === false) {
+        field.classList.add('disabled');
+      } else {
+        field.classList.remove('disabled');
+      }
+
+      // Сохраняем в storage (синхронизируем с настройками)
+      chrome.storage.local.set({ metadataFields });
     });
   });
 }

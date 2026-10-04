@@ -58,26 +58,8 @@ function applyUserAccent(accent) {
 setupThemeMessageListener();
 
 // Дефолтные поля метаданных
-const DEFAULT_METADATA_FIELDS = {
-  'title-ru': true,
-  'title-en': true,
-  'title-original': true,
-  'title-alt': true,
-  'author': true,
-  'artist': true,
-  'year': true,
-  'status': true,
-  'country': true,
-  'release-format': true,
-  'publisher': true,
-  'age-restriction': true,
-  'description': true,
-  'genres': true,
-  'tags': true
-};
-
 // Применение настроек к UI
-function applySettingsToUI(settings, metadataFields) {
+function applySettingsToUI(settings) {
   document.getElementById('cover-quality').value = settings.coverQuality || 'ORIGINAL';
   document.getElementById('image-quality').value = settings.imageQuality || 'ORIGINAL';
   document.getElementById('resize-method').value = settings.resizeMethod || 'MIN_SIDE';
@@ -131,21 +113,13 @@ function applySettingsToUI(settings, metadataFields) {
 
   // Show/hide custom format field and disable/enable checkboxes
   updateTocFormatFields();
-  
+
   // Save original option texts
   saveOriginalOptionTexts();
-  
+
   // Update option texts based on checkboxes
   updateTocOptionTexts();
-  
-  // Metadata fields
-  const fieldsData = metadataFields || {};
-  const metadataCheckboxes = document.querySelectorAll('[data-field]');
-  metadataCheckboxes.forEach(checkbox => {
-    const fieldId = checkbox.getAttribute('data-field');
-    checkbox.checked = fieldsData[fieldId] !== false;
-  });
-  
+
   // Update resize method visibility
   updateResizeMethodVisibility();
 }
@@ -408,10 +382,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     'loadMoreChapters'
   ]);
   
-  const metadataFields = await chrome.storage.local.get(['metadataFields']);
-
   // Применяем сохраненные настройки
-  applySettingsToUI(settings, metadataFields.metadataFields);
+  applySettingsToUI(settings);
 
   // Инициализация видимости полей
   updateJpegQualityFieldVisibility();
@@ -586,14 +558,6 @@ function updateTocOptionTexts() {
 
 // Сохранение настроек
 document.getElementById('btn-save').addEventListener('click', async () => {
-  // Metadata fields
-  const metadataFields = {};
-  const metadataCheckboxes = document.querySelectorAll('[data-field]');
-  metadataCheckboxes.forEach(checkbox => {
-    const fieldId = checkbox.getAttribute('data-field');
-    metadataFields[fieldId] = checkbox.checked;
-  });
-
   const settings = {
     coverQuality: document.getElementById('cover-quality').value,
     imageQuality: document.getElementById('image-quality').value,
@@ -623,7 +587,6 @@ document.getElementById('btn-save').addEventListener('click', async () => {
   };
 
   await chrome.storage.local.set(settings);
-  await chrome.storage.local.set({ metadataFields: metadataFields });
 
   wasSaved = true;
   
@@ -676,8 +639,7 @@ const DEFAULT_SETTINGS_BY_GROUP = {
     'pdf-paragraph-spacing': 1,
     'pdf-image-format': 'original-png',
     'pdf-jpeg-quality': 1.0
-  },
-  metadata: DEFAULT_METADATA_FIELDS
+  }
 };
 
 // Сброс настроек конкретной группы
@@ -685,23 +647,7 @@ function resetGroupSettings(group) {
   const defaults = DEFAULT_SETTINGS_BY_GROUP[group];
   if (!defaults) return;
 
-  if (group === 'metadata') {
-    // Сброс чекбоксов метаданных
-    const metadataCheckboxes = document.querySelectorAll('[data-field]');
-    metadataCheckboxes.forEach(checkbox => {
-      const fieldId = checkbox.getAttribute('data-field');
-      checkbox.checked = defaults[fieldId] !== false;
-      // Убираем inline стили, чтобы CSS работал корректно
-      const indicator = checkbox.parentElement.querySelector('.control__indicator');
-      if (indicator) {
-        const checkedIcon = indicator.querySelector('svg[data-state="checked"]');
-        const defaultIcon = indicator.querySelector('svg[data-state="default"]');
-        if (checkedIcon) checkedIcon.style.display = '';
-        if (defaultIcon) defaultIcon.style.display = '';
-        if (checkedIcon) checkedIcon.style.color = '';
-      }
-    });
-  } else if (group === 'toc') {
+  if (group === 'toc') {
     // Сброс настроек оглавления с восстановлением текстов option'ов
     const tocSelect = document.getElementById('toc-format');
     const options = tocSelect.querySelectorAll('option');
@@ -887,7 +833,7 @@ document.getElementById('btn-reset').addEventListener('click', async () => {
   });
 
   // Применяем дефолтные настройки к UI (но не сохраняем в storage)
-  applySettingsToUI(defaultSettings, DEFAULT_METADATA_FIELDS);
+  applySettingsToUI(defaultSettings);
 
   // Применяем шрифт к select после полного сброса
   const fontSelect = document.getElementById('pdf-font');

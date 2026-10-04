@@ -142,11 +142,22 @@ label.editing {
 
 .field.disabled .field-header-buttons {
   pointer-events: none;
-  opacity: 0.5;
 }
 
 .field.disabled .field-header-buttons button {
-  cursor: default;
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+/* Кнопка видимости должна работать даже когда поле отключено */
+.field.disabled .field-header-buttons .field-visibility-btn {
+  pointer-events: auto;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.field.disabled .field-header-buttons .field-visibility-btn:hover {
+  color: var(--text-primary);
 }
 
 /* Drag and Drop стили */
@@ -188,7 +199,8 @@ label.editing {
 
 /* Кнопки полей */
 .field-reset-btn,
-.field-rename-btn {
+.field-rename-btn,
+.field-visibility-btn {
   background: none !important;
   border: none !important;
   color: var(--text-secondary);
@@ -200,7 +212,8 @@ label.editing {
 }
 
 .field-reset-btn:hover,
-.field-rename-btn:hover {
+.field-rename-btn:hover,
+.field-visibility-btn:hover {
   opacity: 1;
   background: none !important;
   border: none !important;
